@@ -1,9 +1,10 @@
 "use client"
-
+import { useAccount, useNetwork } from "wagmi";
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
 
 export default function Home() {
-  // const { chainId } = getAccount(config)
+  const { chain } = useNetwork();
+  const { address, isConnected } = useAccount();
 
   // const { address } = useAccount()
   // console.log(address);
@@ -31,7 +32,9 @@ export default function Home() {
         <button
           className="bg-blue-400 hover:bg-blue-500 py-2 px-8 rounded"
           onClick={() => permitToken()}
-        >Permit 5 USDC</button>
+        >
+          Permit 5 USDC
+        </button>
       </div>
     </main>
   );
