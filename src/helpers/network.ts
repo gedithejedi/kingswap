@@ -14,7 +14,7 @@ export const chainExplorerUrls: Record<Chains, string> = {
 
 export const chainRpcUrls: Record<Chains, string> = {
     [Chains.SEPOLIA]: `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY}`,
-    [Chains.BASE_SEPOLIA]: "https://sepolia-explorer.base.org",
+    [Chains.BASE_SEPOLIA]: "https://rpc.notadegen.com/base/sepolia",
     [Chains.ARBITRUM_SEPOLIA]: "https://arbitrum-sepolia.blockpi.network/v1/rpc/public",
 }
 
