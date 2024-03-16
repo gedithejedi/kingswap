@@ -1,8 +1,11 @@
-import { providers } from "ethers";
+import { providers, utils } from "ethers";
 import { useMemo } from "react";
 import { HttpTransport } from "viem";
 import { type PublicClient, usePublicClient, WalletClient, useWalletClient } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
+import { readContract } from '@wagmi/core'
+import { parseAbi } from 'viem'
+import { TokenConfig } from "@/helpers/types";
 
 export const getStaticProvider = (chainId: number) => {
   const client = getPublicClient({ chainId });
@@ -48,4 +51,18 @@ export function publicClientToProvider(publicClient: PublicClient) {
 export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
   const publicClient = usePublicClient({ chainId });
   return useMemo(() => publicClientToProvider(publicClient), [publicClient]);
+}
+
+export async function getBalance(address: `0x${string}`, token: TokenConfig, chainId: number) {
+  if(token.isNative) {
+    const provider = getStaticProvider(chainId);
+    return utils.formatEther(await provider.getBalance(address));
+  }
+
+  return readContract({ 
+    address: token.address,
+    abi: parseAbi(['function balanceOf(address) view returns (uint256)']),
+    functionName: 'balanceOf',
+    args: [address],
+  })
 }

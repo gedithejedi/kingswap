@@ -1,10 +1,11 @@
 "use client"
 import { useAccount, useNetwork } from "wagmi";
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import type { TokenConfig } from "@/helpers/types";
 import { getChainOrDefaultChain, isSupportedChain } from '@/helpers/network'
 import { Londrina_Solid } from 'next/font/google'
+import { getBalance } from "@/lib/wallet";
 
 import Image from "next/image";
 import TokenSelectPopup from "./components/TokenSelectPopup";
@@ -30,10 +31,27 @@ export default function Home() {
   const chainId = chain?.id;
   const currentChainOrDefaultChain = useMemo(() => getChainOrDefaultChain(chainId), [chainId]);
   const isChainSupported = useMemo(() => isSupportedChain(chainId), [chainId]);
-  const isButtonDisabled = !isChainSupported || !Number(amountToSwap);
+  const isButtonDisabled = !isChainSupported || amountToSwap === undefined;
 
-  // const { address } = useAccount()
-  // console.log(address);
+  const userBalance = useRef<number>(0);
+  useEffect(() => {
+    async function checkBalance() {
+      if(!address || !tokenToSwapFrom || !chainId) {
+        userBalance.current = 0;
+        return;
+      };
+
+      userBalance.current = Number(await getBalance(address, tokenToSwapFrom, chainId));
+      return ;
+    }
+    checkBalance();
+  }, [tokenToSwapFrom, amountToSwap, address]);
+
+  const doesUserHaveEnoughBalance = useMemo(() => {
+    if(!tokenToSwapFrom || !amountToSwap) return true;
+    return userBalance.current >= parseFloat(amountToSwap.replace(/,/g, ''));
+  },[userBalance, amountToSwap, tokenToSwapFrom]);
+  
   const permitToken = async () => {
     if(!isChainSupported) {
       console.error("Chain not supported")
@@ -49,8 +67,6 @@ export default function Home() {
     //   message: 'hello world',
     // })
   }
-
-  // TODO: Add a check if user has enough balance
 
   return (
     <main className="flex flex-col min-h-screen bg-bg-gray text-white">
@@ -75,9 +91,10 @@ export default function Home() {
         <div className="flex flex-col gap-y-5 items-center md:w-[80%] max-w-[600px]">
           <div className="flex flex-col items-center w-full">
             <div className="relative w-full">
-              <Image src="/star.png" alt="star" width={70} height={100} className="absolute top-[-94px] left-4" />
-              <Image src="/star.png" alt="star" width={40} height={50} className="absolute top-[-54px] right-4" />
+              <Image src="/star.png" alt="star" width={70} height={100} className="absolute top-[-94px] left-4 z-0" />
+              <Image src="/star.png" alt="star" width={40} height={50} className="absolute top-[-54px] right-4 z-0" />
               <PriceInput
+                chain={currentChainOrDefaultChain}
                 amountToSwap={amountToSwap}
                 setAmountToSwap={setAmountToSwap}
                 selectedToken={tokenToSwapFrom}
@@ -96,12 +113,13 @@ export default function Home() {
                   }}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3" />
                   </svg>
                 </div>
               </div>
             </div>
             <PriceInput
+              chain={currentChainOrDefaultChain}
               isNumberInputDisabled={true}
               amountToSwap={amountToSwap}
               setAmountToSwap={setAmountToSwap}
@@ -116,10 +134,13 @@ export default function Home() {
             type="primary" 
             className="w-full text-lg py-3" 
             onClick={permitToken}
-            disabled={isButtonDisabled}
+            disabled={isButtonDisabled || !doesUserHaveEnoughBalance}
           >
-            {isButtonDisabled ? "Permit" : `Permit ${amountToSwap} ${tokenToSwapFrom?.symbol ?? 'ETH'}`}
+            {!isConnected ? 'Please connect wallet': isButtonDisabled ? "Permit" : `Permit ${amountToSwap} ${tokenToSwapFrom?.symbol ?? 'ETH'}`}
           </Button>
+          {!doesUserHaveEnoughBalance && <p className="text-red-400 text-start w-full">
+            It looks like you don&apos;t have enough balance to swap {amountToSwap} {tokenToSwapFrom?.symbol ?? 'ETH'}
+          </p>}
         </div>
       </div>
     </main>
