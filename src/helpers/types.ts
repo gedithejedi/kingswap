@@ -1,7 +1,5 @@
-export declare interface NetworkConfig {
-    chainId: string;
-    type: string;
+export declare interface TokenConfig {
     title: string;
-    rpcUrl: string;
-    blockExplorer: string;
+    symbol: string;
+    imgUrl?: string;
 }
