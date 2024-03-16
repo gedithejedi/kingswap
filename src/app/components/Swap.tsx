@@ -35,13 +35,13 @@ export default function Swap({
     const userBalance = useRef<number>(0);
     useEffect(() => {
         async function checkBalance() {
-        if(!address || !tokenToSwapFrom || !chainId) {
-            userBalance.current = 0;
-            return;
-        };
+            if(!address || !tokenToSwapFrom || !chainId) {
+                userBalance.current = 0;
+                return;
+            };
 
-        userBalance.current = Number(await getBalance(address, tokenToSwapFrom, chainId));
-        return ;
+            userBalance.current = Number(await getBalance(address, tokenToSwapFrom, chainId));
+            return;
         }
         checkBalance();
     }, [chainId, tokenToSwapFrom, amountToSwap, address]);
