@@ -1,7 +1,7 @@
 "use client"
 import { useAccount, useNetwork } from "wagmi";
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import type { TokenConfig } from "@/helpers/types";
 import { getChainOrDefaultChain, isSupportedChain } from '@/helpers/network'
 import { Londrina_Solid } from 'next/font/google'
@@ -11,6 +11,10 @@ import TokenSelectPopup from "./components/TokenSelectPopup";
 import Button from "./components/Button";
 import Swap from "./components/Swap";
 import Transfer from "./components/Transfer";
+import toast from "react-hot-toast";
+import { useEthersSigner } from "@/lib/wallet";
+import { PermitData, usePostPermit } from "./utils/postPermit";
+import { ethers } from "ethers";
 
 const londrina = Londrina_Solid({
   weight: ["300", "400"],
@@ -20,21 +24,52 @@ const londrina = Londrina_Solid({
 export default function Home() {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
+
   const [tokenPopupPayload, setTokenPopupPayload] = useState<{
     selectedToken?: TokenConfig,
     disabledTokens: TokenConfig[],
     onSelect: Dispatch<SetStateAction<undefined | TokenConfig>>,
   }>();
   const [selectedMenu, setSelectedMenu] = useState<string>('swap');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const chainId = chain?.id;
   const currentChainOrDefaultChain = useMemo(() => getChainOrDefaultChain(chainId), [chainId]);
   const isChainSupported = useMemo(() => isSupportedChain(chainId), [chainId]);
 
+  const signer = useEthersSigner();
+  const { mutate: postPermit } = usePostPermit();
+
   const permitToken = async () => {
-    if (!isChainSupported) {
-      console.error("Chain not supported")
-      return
+    if (!isChainSupported) toast.error("Chain not supported");
+    if (!address) return toast.error("No address found.");
+    if (!chainId) return toast.error("error getting chainId");
+    if (!signer) return toast.error("error getting signers");
+
+    setIsLoading(true);
+    const receiver = "0x43a04F19Cc140102501AcC9da48BF85f9EE8829f";
+    const tokenAddress = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+    const amount = ethers.utils.parseUnits("2", 6);
+
+    const body: PermitData = {
+      chainId,
+      tokenAddress,
+      userAddress: address,
+      signer,
+      recipient: receiver,
+      amount
     }
+
+    postPermit(body, {
+      async onSuccess() {
+        setIsLoading(false);
+        toast.success("Permit created");
+      },
+      onError() {
+        setIsLoading(false);
+        toast.error("Error creating permit", { id: "create-permit-error" });
+      }
+    });
   }
 
   return (
@@ -81,6 +116,7 @@ export default function Home() {
 
             {selectedMenu === 'swap' &&
               <Swap
+                isLoading={isLoading}
                 isChainSupported={isChainSupported}
                 currentChainOrDefaultChain={currentChainOrDefaultChain}
                 address={address}
@@ -91,6 +127,7 @@ export default function Home() {
 
             {selectedMenu === 'transfer' &&
               <Transfer
+                isLoading={isLoading}
                 isChainSupported={isChainSupported}
                 address={address}
                 currentChainOrDefaultChain={currentChainOrDefaultChain}

@@ -11,6 +11,7 @@ type TransferProps = {
     currentChainOrDefaultChain: Chains;
     address?: `0x${string}`;
     permitToken: () => void;
+    isLoading: boolean;
 }
 
 export default function Transfer({
@@ -18,10 +19,11 @@ export default function Transfer({
     currentChainOrDefaultChain,
     address,
     permitToken,
+    isLoading
 }: TransferProps) {
     const [amount, setAmount] = useState<string | undefined>();
     const [receiver, setReceiver] = useState<string | undefined>();
-    const [selectedToken, setSelectedToken] = useState<TokenConfig | undefined>(); 
+    const [selectedToken, setSelectedToken] = useState<TokenConfig | undefined>();
     const [tokenPopupPayload, setTokenPopupPayload] = useState<{
         selectedToken?: TokenConfig,
         disabledTokens: TokenConfig[],
@@ -29,12 +31,12 @@ export default function Transfer({
     }>();
     const isButtonDisabled = !isChainSupported || amount === undefined;
 
-    return(
+    return (
         <div>
-            {tokenPopupPayload && <TokenSelectPopup 
+            {tokenPopupPayload && <TokenSelectPopup
                 {...tokenPopupPayload}
                 chainId={currentChainOrDefaultChain}
-                isOpen={!!tokenPopupPayload} 
+                isOpen={!!tokenPopupPayload}
                 close={() => setTokenPopupPayload(undefined)}
             />}
 
@@ -54,26 +56,27 @@ export default function Transfer({
                     <label className="flex flex-col gap-y-3">
                         <span className="text-sm font-semibold">Recipient</span>
                         <input
-                            type="text" 
-                            value={receiver} 
+                            type="text"
+                            value={receiver}
                             onChange={e => setReceiver(e.target.value)}
-                            className="bg-gray-light w-full focus:outline-none text-xl " 
-                            placeholder="0x23dfc90..." 
+                            className="bg-gray-light w-full focus:outline-none text-xl "
+                            placeholder="0x23dfc90..."
                         />
                     </label>
                 </div>
 
-                <Button 
-                    type="primary" 
-                    className="w-full text-lg py-3 mt-5 font-semibold" 
+                <Button
+                    isLoading={isLoading}
+                    type="primary"
+                    className="w-full text-lg py-3 mt-5 font-semibold"
                     onClick={permitToken}
                     disabled={isButtonDisabled}
                 >
                     {!address
                         ? 'Please connect wallet'
-                            : isButtonDisabled 
-                                ? "Permit" 
-                                : `Permit ${amount} ${selectedToken?.symbol ?? 'ETH'}`
+                        : isButtonDisabled
+                            ? "Permit"
+                            : `Permit ${amount} ${selectedToken?.symbol ?? 'ETH'}`
                     }
                 </Button>
             </div>
