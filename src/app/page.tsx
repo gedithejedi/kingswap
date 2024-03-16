@@ -30,6 +30,7 @@ export default function Home() {
   const chainId = chain?.id;
   const currentChainOrDefaultChain = useMemo(() => getChainOrDefaultChain(chainId), [chainId]);
   const isChainSupported = useMemo(() => isSupportedChain(chainId), [chainId]);
+  const isButtonDisabled = !isChainSupported || !Number(amountToSwap);
 
   // const { address } = useAccount()
   // console.log(address);
@@ -50,7 +51,7 @@ export default function Home() {
   }
 
   // TODO: Add a check if user has enough balance
-  
+
   return (
     <main className="flex flex-col min-h-screen bg-bg-gray text-white">
       {tokenPopupPayload && <TokenSelectPopup 
@@ -115,9 +116,9 @@ export default function Home() {
             type="primary" 
             className="w-full text-lg py-3" 
             onClick={permitToken}
-            disabled={!isChainSupported || !Number(amountToSwap)}
+            disabled={isButtonDisabled}
           >
-            Permit 5 USDC
+            {isButtonDisabled ? "Permit" : `Permit ${amountToSwap} ${tokenToSwapFrom?.symbol ?? 'ETH'}`}
           </Button>
         </div>
       </div>
