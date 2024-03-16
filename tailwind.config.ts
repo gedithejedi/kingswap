@@ -10,8 +10,10 @@ const config: Config = {
     extend: {
       colors: {
         'primary': '#BB86FC',
+        'primary-focus': '#a667f7',
         'bg-gray': '#272727',
         'gray-dark': '#202020',
+        'gray-darker':'#111111',
         'gray-light': '#474646',
         'text-gray': '#D6D4D4',
       },
