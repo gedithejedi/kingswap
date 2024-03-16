@@ -49,6 +49,8 @@ export default function Home() {
     // })
   }
 
+  // TODO: Add a check if user has enough balance
+  
   return (
     <main className="flex flex-col min-h-screen bg-bg-gray text-white">
       {tokenPopupPayload && <TokenSelectPopup 
