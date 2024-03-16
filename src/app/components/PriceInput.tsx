@@ -15,6 +15,7 @@ type PriceInputProps = {
     }) => void,
     disabledTokens: TokenConfig[],
     setSelectedToken: Dispatch<SetStateAction<undefined | TokenConfig>>,
+    disabled?: boolean
 }
 
 export default function PriceInput({
@@ -25,6 +26,7 @@ export default function PriceInput({
     setTokenPopupPayload,
     disabledTokens,
     setSelectedToken,
+    disabled
 }: PriceInputProps) {
     return (
         <div className="flex gap-2 items-center bg-gray-light p-4 w-full rounded-lg mb-1">
@@ -36,15 +38,16 @@ export default function PriceInput({
                 step={0.01}
                 value={amountToSwap} 
                 onChange={e => setAmountToSwap(e.target?.value)} 
-                disabled={isNumberInputDisabled}
+                disabled={isNumberInputDisabled || disabled}
             />
             <Button
                 className="flex justify-center items-center rounded-3xl text-base px-4 min-w-32 h-12 bg-gray-dark" 
                 onClick={() => setTokenPopupPayload({
-                selectedToken,
-                disabledTokens,
-                onSelect: setSelectedToken,
+                    selectedToken,
+                    disabledTokens,
+                    onSelect: setSelectedToken,
                 })}
+                disabled={disabled}
                 >
                 {selectedToken ? 
                     (

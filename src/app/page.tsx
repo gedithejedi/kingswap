@@ -1,8 +1,9 @@
 "use client"
 import { useAccount, useNetwork } from "wagmi";
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import type { TokenConfig } from "@/helpers/types";
+import { getChainOrDefaultChain, isSupportedChain } from '@/helpers/network'
 
 import TokenSelectPopup from "./components/TokenSelectPopup";
 import Button from "./components/Button";
@@ -19,10 +20,18 @@ export default function Home() {
     disabledTokens: TokenConfig[],
     onSelect: Dispatch<SetStateAction<undefined | TokenConfig>>,
   }>();
+  const chainId = chain?.id;
+  const currentChainOrDefaultChain = useMemo(() => getChainOrDefaultChain(chainId), [chainId]);
+  const isChainSupported = useMemo(() => isSupportedChain(chainId), [chainId]);
 
   // const { address } = useAccount()
   // console.log(address);
   const permitToken = async () => {
+    if(!isChainSupported) {
+      console.error("Chain not supported")
+      return
+    }
+    
     console.log("click");
     // if (!address) return console.log("No address found.");
 
@@ -37,9 +46,11 @@ export default function Home() {
     <main className="flex flex-col min-h-screen bg-bg-gray text-white">
       {tokenPopupPayload && <TokenSelectPopup 
         {...tokenPopupPayload}
+        chainId={currentChainOrDefaultChain}
         isOpen={!!tokenPopupPayload} 
         close={() => setTokenPopupPayload(undefined)}
       />}
+
       <div className="w-full flex justify-end py-3 px-4">
         <div className="w-60">
           <DynamicWidget variant='modal' />
@@ -61,6 +72,7 @@ export default function Home() {
                 setTokenPopupPayload={setTokenPopupPayload}
                 disabledTokens={tokenToSwapTo ? [tokenToSwapTo] : []}
                 setSelectedToken={setTokenToSwapFrom}
+                disabled={!isChainSupported}
                />
               <div className="absolute bottom-[-16px] w-full flex items-center justify-center">
                 <div
@@ -85,9 +97,15 @@ export default function Home() {
               setTokenPopupPayload={setTokenPopupPayload}
               disabledTokens={tokenToSwapFrom ? [tokenToSwapFrom] : []}
               setSelectedToken={setTokenToSwapTo}
+              disabled={!isChainSupported}
             />
           </div>
-          <Button type="primary" className="w-full text-lg py-3" onClick={permitToken} >
+          <Button 
+            type="primary" 
+            className="w-full text-lg py-3" 
+            onClick={permitToken}
+            disabled={!isChainSupported || !Number(amountToSwap)}
+          >
             Permit 5 USDC
           </Button>
         </div>

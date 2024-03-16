@@ -3,11 +3,12 @@ import type { TokenConfig } from "@/helpers/types";
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { tokensByChain } from "@/helpers/token";
-import { Chains } from "@/helpers/network";
+import { Chains } from '@/helpers/network'
 
 import Button from './Button'
 
 type TokenSelectPopupProps = {
+    chainId: Chains,
     selectedToken?: TokenConfig,
     disabledTokens: TokenConfig[],
     isOpen: boolean,
@@ -16,6 +17,7 @@ type TokenSelectPopupProps = {
 }
 
 export default function TokenSelectPopup({
+    chainId,
     selectedToken,
     disabledTokens,
     isOpen,
@@ -62,12 +64,14 @@ export default function TokenSelectPopup({
                                         <p className="text-start font-semibold">Your tokens</p>
                                         {/* TODO */}
                                     </div>
+                                    
+                                    {/* Divider */}
                                     <div className="h-[0.5px] w-full bg-text-gray"/>
+                                    
                                     <div className="w-full flex flex-col gap-y-2">
                                         <p className="text-start font-semibold text-text-gray">Popular tokens</p>
                                         <div className="flex flex-col gap-y-4 w-full overflow-y-scroll">
-                                            {/* TODO: use actual current chain */}
-                                            {tokensByChain[Chains.BASE_SEPOLIA].map(token => {
+                                            {tokensByChain[chainId].map(token => {
                                                 const isDisabled = disabledTokens.some(disabledToken => disabledToken.symbol === token.symbol);
                                                 const isSelected = token.title === selectedToken?.title;
 
@@ -75,7 +79,6 @@ export default function TokenSelectPopup({
                                                 const textColor = isSelected ? 'text-primary' : isDisabled ? 'text-gray-light' :'text-white';
                                                 const corsor = isDisabled ? 'cursor-not-allowed' : 'cursor-pointer';
                                                 const bgColorHover = isDisabled ? '' : 'hover:bg-gray-darker';
-                                                console.log({bgColor, textColor, corsor, bgColorHover})
                                                 return (
                                                     <div 
                                                         className={`w-full flex items-center gap-4 text-start ${corsor} ${bgColor} ${textColor} ${bgColorHover} p-4 rounded-lg`}
