@@ -1,8 +1,14 @@
 "use client"
 import { useAccount, useNetwork } from "wagmi";
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
-import { useSignTypedData } from 'wagmi'
-import { useEthersSigner } from "@/lib/wallet";
+import { getStaticProvider, useEthersSigner } from "@/lib/wallet";
+import { NumericFormat } from "react-number-format";
+import { ChangeEvent, useState } from "react";
+import { Contract, BigNumber } from "ethers";
+
+import ERC20ABI from "@/lib/erc20Abi.json";
+import dayjs from "dayjs";
+import { approveSwapTransaction } from "../utils/fetchSwap";
 
 const types = {
   Person: [
@@ -16,84 +22,87 @@ const types = {
   ]
 };
 
-
 export default function Test() {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
-  const { signTypedData } = useSignTypedData()
   const signer = useEthersSigner();
 
-  const chainId = chain?.id;
+  const [amountToSwap, setAmountToSwap] = useState("0");
+
+  const chainId = chain?.id || "";
   const contractAddress = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+  const spender = '0x43a04F19Cc140102501AcC9da48BF85f9EE8829f';
+  const amount = "1000000000000000000";
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const num = e.target.value.replaceAll(",", "");
+    setAmountToSwap(num);
+  };
 
   const splitSig = (sig: any) => {
-    // splits the signature to r, s, and v values.
     const pureSig = sig.replace("0x", "")
 
     const r = new Buffer(pureSig.substring(0, 64), 'hex')
     const s = new Buffer(pureSig.substring(64, 128), 'hex')
     const v = new Buffer((parseInt(pureSig.substring(128, 130), 16)).toString());
 
-
-    return {
-      r, s, v
-    }
+    return { r, s, v }
   }
 
-  // const signTyped = async (dataToSign: string, domain: any, value: any) => {
-  //   return new Promise((resolve, reject) => {
-  //     const signer = new ethers.providers.JsonRpcProvider().getSigner();
-  //     const signature = signer._signTypedData(domain, types, value);
-
-  //     return { signer, signature }
-  //   })
-  // }
-
   const createPermit = async () => {
+    if (!address) return console.log("No address found.");
     if (!chainId) return console.log("error getting chainId");
     const domain = {
       name: "Kings Swap",
       version: '1',
       chainId,
-      verifyingContract: contractAddress
+      verifyingContract: contractAddress //transaction to
     };
+
+    const deadline = dayjs().add(86400, "seconds").unix();
 
     const value = {
       from: {
-        name: 'Cow',
-        wallet: '0xB3622628546DE921A70945ffB51811725FbDA109'
+        name: 'From',
+        wallet: address // User wallet address
       },
       to: {
-        name: 'Bob',
-        wallet: '0xa91d405230bd93d873c98c9ED96285775ec1dC1A'
+        name: 'To',
+        wallet: spender // Uniswap contract?
       },
-      contents: 'Hello, Bob!'
+      contents: 'Send USDC from bank to secondary wallet',
+      duration: deadline,
+      value: amount,
     };
 
     if (!signer) return console.error("Error getting signer");
 
     try {
       const signature = await signer._signTypedData(domain, types, value);
+
       console.log(signature);
       const split = splitSig(signature)
 
-      return {
-        ...split, signature
-      }
+      const permit = { ...split, signature }
+      // console.log(`r: 0x${permit.r.toString('hex')}, s: 0x${permit.s.toString('hex')}, v: ${permit.v}, sig: ${permit.signature}`);
+      console.log(permit);
+      console.log("deadline", deadline);
+
+      const provider = getStaticProvider(chainId);
+      approveSwapTransaction({
+        owner: address,
+        spender,
+        value: BigNumber.from(amount),
+        deadline: BigNumber.from(deadline),
+        v: permit.v,
+        r: permit.r,
+        s: permit.s,
+      })
+      const token = new Contract(address, ERC20ABI, provider);
+      token.permit()
     } catch (error: any) {
       console.log(error);
     }
-  }
-
-  const permitToken = async () => {
-    console.log("permit");
-    if (!address) return console.log("No address found.");
-    console.log("hew");
-    const permit = await createPermit();
-    console.log(permit);
-
-    //TODO: call the usdc contract to execute the transaction
-    // console.log(`r: 0x${permit.r.toString('hex')}, s: 0x${permit.s.toString('hex')}, v: ${permit.v}, sig: ${permit.signature}`);
   }
 
   return (
@@ -105,15 +114,34 @@ export default function Test() {
       </div>
 
       <div className="flex flex-col items-center mt-10 gap-9">
-        Approve a USDC token
+        Testing the permits
+        <NumericFormat
+          thousandSeparator={","}
+          allowNegative={false}
+          className="text-black p-2 h-10 w-64 flex justify-between"
+          name={"amount"}
+          // label={"Amount to swap"}
+          placeholder={"0.00"}
+          onChange={handleChange}
+          value={amountToSwap}
+        // error={error}
+        // disabled={disabled}
+        />
         <button
           disabled={!address}
           className="bg-blue-400 hover:bg-blue-500 py-2 px-8 rounded"
-          onClick={() => permitToken()}
+          onClick={() => createPermit()}
         >
-          Permit 5 USDC
+          Create and execute the permit
+        </button>
+        <button
+          disabled={!address}
+          className="bg-blue-400 hover:bg-blue-500 py-2 px-8 rounded"
+          onClick={() => console.log("backend")}
+        >
+          Call backend
         </button>
       </div>
-    </main>
+    </main >
   );
 }
