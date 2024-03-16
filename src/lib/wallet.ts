@@ -1,5 +1,4 @@
 import { providers, utils } from "ethers";
-import { useMemo } from "react";
 import { HttpTransport } from "viem";
 import {
   type PublicClient,
@@ -32,10 +31,7 @@ export function walletClientToSigner(walletClient: WalletClient) {
 
 export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
   const { data: walletClient } = useWalletClient({ chainId });
-  return useMemo(
-    () => (walletClient ? walletClientToSigner(walletClient) : undefined),
-    [walletClient]
-  );
+  return walletClient ? walletClientToSigner(walletClient) : undefined;
 }
 
 // Provider
@@ -58,14 +54,10 @@ export function publicClientToProvider(publicClient: PublicClient) {
 
 export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
   const publicClient = usePublicClient({ chainId });
-  return useMemo(() => publicClientToProvider(publicClient), [publicClient]);
+  return publicClientToProvider(publicClient);
 }
 
-export async function getBalance(
-  address: `0x${string}`,
-  token: TokenConfig,
-  chainId: number
-) {
+export async function getBalance(address: `0x${string}`, token: TokenConfig, chainId: number) {
   if (token.isNative) {
     const provider = getStaticProvider(chainId);
     return utils.formatEther(await provider.getBalance(address));

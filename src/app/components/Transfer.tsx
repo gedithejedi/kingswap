@@ -10,7 +10,7 @@ type TransferProps = {
   isChainSupported: boolean;
   currentChainOrDefaultChain: Chains;
   address?: `0x${string}`;
-  permitToken: () => void;
+  permitToken: (amount: string, tokenAddress: string) => void;
   isLoading: boolean;
 };
 
@@ -71,7 +71,7 @@ export default function Transfer({
           isLoading={isLoading}
           type="primary"
           className="w-full text-lg py-3 mt-5 font-semibold"
-          onClick={permitToken}
+          onClick={() => permitToken(amount || "0", selectedToken?.address || "")}
           disabled={isButtonDisabled}
         >
           {!address

@@ -41,7 +41,7 @@ export const approveSwapTransaction = async (
   });
 
   const res = await result.json();
-  console.log(res);
+
   const { success, message } = res;
 
   return { success, message };

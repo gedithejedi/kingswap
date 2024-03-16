@@ -12,8 +12,9 @@ import Button from "./components/Button";
 import Swap from "./components/Swap";
 import Transfer from "./components/Transfer";
 import toast from "react-hot-toast";
-import { useEthersSigner } from "@/lib/wallet";
+import { getStaticProvider, useEthersSigner } from "@/lib/wallet";
 import { PermitData, usePostPermit } from "./utils/postPermit";
+import Erc20Abi from "@/lib/erc20Abi.json"
 import { ethers } from "ethers";
 
 const londrina = Londrina_Solid({
@@ -37,19 +38,25 @@ export default function Home() {
   const currentChainOrDefaultChain = useMemo(() => getChainOrDefaultChain(chainId), [chainId]);
   const isChainSupported = useMemo(() => isSupportedChain(chainId), [chainId]);
 
-  const signer = useEthersSigner();
   const { mutate: postPermit } = usePostPermit();
 
-  const permitToken = async () => {
-    if (!isChainSupported) toast.error("Chain not supported");
-    if (!address) return toast.error("No address found.");
-    if (!chainId) return toast.error("error getting chainId");
-    if (!signer) return toast.error("error getting signers");
+  const permitToken = async (amountToSwap: string, tokenAddress: string) => {
+    if (!isChainSupported || !chainId) return toast.error("Chain not supported");
+    if (!address) return toast.error("You need to log in to use this feature");
+    if (!tokenAddress) return toast.error("Please select a token");
 
     setIsLoading(true);
+
+    const signer = useEthersSigner({ chainId });
     const receiver = "0x43a04F19Cc140102501AcC9da48BF85f9EE8829f";
-    const tokenAddress = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
-    const amount = ethers.utils.parseUnits("2", 6);
+
+    const provider = getStaticProvider(chainId);
+    const token = new ethers.Contract(tokenAddress, Erc20Abi, provider);
+    const decimals = await token.decimals();
+
+    const amount = ethers.utils.parseUnits(amountToSwap.replace(",", ""), decimals);
+
+    if (!signer) return toast.error("You need to log in to use this feature");
 
     const body: PermitData = {
       chainId,
@@ -57,7 +64,8 @@ export default function Home() {
       userAddress: address,
       signer,
       recipient: receiver,
-      amount
+      amount,
+      provider
     }
 
     postPermit(body, {
