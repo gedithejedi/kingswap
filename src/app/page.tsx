@@ -10,6 +10,7 @@ import Image from "next/image";
 import TokenSelectPopup from "./components/TokenSelectPopup";
 import Button from "./components/Button";
 import Swap from "./components/Swap";
+import Transfer from "./components/Transfer";
 
 const londrina = Londrina_Solid({ 
   weight: ["300", "400"],
@@ -19,9 +20,6 @@ const londrina = Londrina_Solid({
 export default function Home() {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
-  const [tokenToSwapFrom, setTokenToSwapFrom] = useState<TokenConfig | undefined>(); 
-  const [tokenToSwapTo, setTokenToSwapTo] = useState<TokenConfig | undefined>(); 
-  const [amountToSwap, setAmountToSwap] = useState<string | undefined>(); 
   const [tokenPopupPayload, setTokenPopupPayload] = useState<{
     selectedToken?: TokenConfig,
     disabledTokens: TokenConfig[],
@@ -71,14 +69,14 @@ export default function Home() {
               <Button 
                 onClick={() => setSelectedMenu('swap')} 
                 disabled={selectedMenu === 'swap'}
-                className="px-4"
+                className={`px-4 ${selectedMenu === 'swap' ? 'bg-primary font-bold' : ''}`}
               >
                 Swap
               </Button>
               <Button 
                 onClick={() => setSelectedMenu('transfer')}  
                 disabled={selectedMenu === 'transfer'}
-                className="px-4"
+                className={`px-4 ${selectedMenu === 'transfer' ? 'bg-primary font-bold' : ''}`}
               >
                 Transfer
               </Button>
@@ -90,13 +88,17 @@ export default function Home() {
                 currentChainOrDefaultChain={currentChainOrDefaultChain}
                 address={address}
                 chainId={chainId} 
+                permitToken={permitToken}
               />
             }
 
             {selectedMenu === 'transfer' && 
-              <div>
-                Coming soon
-              </div>
+              <Transfer
+                isChainSupported={isChainSupported}
+                address={address}
+                currentChainOrDefaultChain={currentChainOrDefaultChain}
+                permitToken={permitToken}
+              />
             }
             
           </div>

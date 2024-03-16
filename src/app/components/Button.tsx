@@ -17,7 +17,7 @@ export default function Button ({
     const disabledStyle = disabled ? 'cursor-not-allowed opacity-50' : ''
     return (
         <button           
-            className={`${colorStyle} py-2 text-white rounded-lg ${className} ${disabledStyle}`}
+            className={`${colorStyle} py-2 text-white rounded-lg ${disabledStyle} ${className}`}
             onClick={onClick}
             disabled={disabled}
         >

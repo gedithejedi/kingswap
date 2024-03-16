@@ -9,8 +9,8 @@ import Button from "../components/Button";
 type PriceInputProps = {
     chain?: Chains,
     isNumberInputDisabled?: boolean,
-    amountToSwap?: string,
-    setAmountToSwap: (value: string) => void,
+    amount?: string,
+    setAmount: (value: string) => void,
     selectedToken?: TokenConfig,
     setTokenPopupPayload: (payload: {
         selectedToken?: TokenConfig,
@@ -20,39 +20,45 @@ type PriceInputProps = {
     disabledTokens: TokenConfig[],
     setSelectedToken: Dispatch<SetStateAction<undefined | TokenConfig>>,
     disabled?: boolean
+    label?: string
 }
 
 export default function PriceInput({
     chain,
     isNumberInputDisabled,
-    amountToSwap,
-    setAmountToSwap,
+    amount,
+    setAmount,
     selectedToken,
     setTokenPopupPayload,
     disabledTokens,
     setSelectedToken,
-    disabled
+    disabled,
+    label
 }: PriceInputProps) {
     const priceInUSDC = useMemo(() => {
-        if(!selectedToken || amountToSwap === undefined || amountToSwap === "") {
+        if(!selectedToken || amount === undefined || amount === "") {
             return undefined;
         }
-        return parseFloat(amountToSwap.replace(/,/g, ''));
-    }, [chain, amountToSwap, selectedToken]);
+        
+        return parseFloat(amount.replace(/,/g, ''));
+    }, [chain, amount, selectedToken]);
     
     return (
         <div className="flex gap-2 items-center bg-gray-light p-4 w-full rounded-lg mb-1">
             <div className="w-full flex flex-col gap-y-1">
-                <NumericFormat
-                    thousandSeparator={","}
-                    allowNegative={false}
-                    className="bg-gray-light w-full focus:outline-none text-3xl p-2" 
-                    placeholder={"0.00"}
-                    onChange={e => setAmountToSwap(e.target?.value)} 
-                    value={amountToSwap}
-                    disabled={isNumberInputDisabled || disabled}
-                    step={0.01}
-                />
+                <label className="flex flex-col gap-y-1">
+                    {label && <span className="ml-2 text-sm font-semibold">{label}</span>}
+                    <NumericFormat
+                        thousandSeparator={","}
+                        allowNegative={false}
+                        className="bg-gray-light w-full focus:outline-none text-3xl p-2" 
+                        placeholder={"0.00"}
+                        onChange={e => setAmount(e.target?.value)} 
+                        value={amount}
+                        disabled={isNumberInputDisabled || disabled}
+                        step={0.01}
+                    />
+                </label>
                 {priceInUSDC !== undefined && <p className="text-sm">$ {priceInUSDC.toFixed(3)}</p>}
             </div>
             <Button

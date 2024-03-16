@@ -12,13 +12,15 @@ type SwapProps = {
     currentChainOrDefaultChain: Chains;
     address?: `0x${string}`;
     chainId?: number;
+    permitToken: () => void;
 }
 
 export default function Swap({
     isChainSupported,
     currentChainOrDefaultChain,
     address,
-    chainId
+    chainId,
+    permitToken,
 }: SwapProps) {
     const [tokenToSwapFrom, setTokenToSwapFrom] = useState<TokenConfig | undefined>(); 
     const [tokenToSwapTo, setTokenToSwapTo] = useState<TokenConfig | undefined>(); 
@@ -30,7 +32,6 @@ export default function Swap({
     }>();
     const isButtonDisabled = !isChainSupported || amountToSwap === undefined;
     
-      
     const userBalance = useRef<number>(0);
     useEffect(() => {
         async function checkBalance() {
@@ -45,20 +46,11 @@ export default function Swap({
         checkBalance();
     }, [chainId, tokenToSwapFrom, amountToSwap, address]);
 
-  const doesUserHaveEnoughBalance = useMemo(() => {
-    if(!tokenToSwapFrom || !amountToSwap) return true;
-    return userBalance.current >= parseFloat(amountToSwap.replace(/,/g, ''));
-  },[userBalance, amountToSwap, tokenToSwapFrom]);
+    const doesUserHaveEnoughBalance = useMemo(() => {
+        if(!tokenToSwapFrom || !amountToSwap) return true;
+        return userBalance.current >= parseFloat(amountToSwap.replace(/,/g, ''));
+    },[userBalance, amountToSwap, tokenToSwapFrom]);
 
-    const permitToken = async () => {
-        if(!isChainSupported) {
-        console.error("Chain not supported")
-        return
-        }
-        
-        console.log("click");
-
-    }
     return (
         <div>
             {tokenPopupPayload && <TokenSelectPopup 
@@ -71,14 +63,14 @@ export default function Swap({
                 <div className="flex flex-col items-center w-full">
                     <div className="w-full relative">
                         <PriceInput
-                        chain={currentChainOrDefaultChain}
-                        amountToSwap={amountToSwap}
-                        setAmountToSwap={setAmountToSwap}
-                        selectedToken={tokenToSwapFrom}
-                        setTokenPopupPayload={setTokenPopupPayload}
-                        disabledTokens={tokenToSwapTo ? [tokenToSwapTo] : []}
-                        setSelectedToken={setTokenToSwapFrom}
-                        disabled={!isChainSupported}
+                            chain={currentChainOrDefaultChain}
+                            amount={amountToSwap}
+                            setAmount={setAmountToSwap}
+                            selectedToken={tokenToSwapFrom}
+                            setTokenPopupPayload={setTokenPopupPayload}
+                            disabledTokens={tokenToSwapTo ? [tokenToSwapTo] : []}
+                            setSelectedToken={setTokenToSwapFrom}
+                            disabled={!isChainSupported}
                         />
                         <div className="absolute bottom-[-16px] w-full flex items-center justify-center">
                             <div
@@ -98,8 +90,8 @@ export default function Swap({
                     <PriceInput
                         chain={currentChainOrDefaultChain}
                         isNumberInputDisabled={true}
-                        amountToSwap={amountToSwap}
-                        setAmountToSwap={setAmountToSwap}
+                        amount={amountToSwap}
+                        setAmount={setAmountToSwap}
                         selectedToken={tokenToSwapTo}
                         setTokenPopupPayload={setTokenPopupPayload}
                         disabledTokens={tokenToSwapFrom ? [tokenToSwapFrom] : []}
