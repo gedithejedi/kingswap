@@ -1,52 +1,22 @@
 "use client"
 import { useAccount, useNetwork } from "wagmi";
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
-import { getStaticProvider, useEthersSigner } from "@/lib/wallet";
+import { useEthersSigner } from "@/lib/wallet";
 import { NumericFormat } from "react-number-format";
 import { ChangeEvent, useState } from "react";
-import { ethers, BigNumber } from "ethers";
-import ERC20ABI from "@/lib/erc20Abi.json";
-
-import dayjs from "dayjs";
-import { approveSwapTransaction } from "../utils/fetchSwap";
+import { ethers } from "ethers";
+import { PermitData, usePostPermit } from "../utils/postPermit";
 import toast from "react-hot-toast";
-
-const types = {
-  Permit: [{
-    name: "owner",
-    type: "address"
-  },
-  {
-    name: "spender",
-    type: "address"
-  },
-  {
-    name: "value",
-    type: "uint256"
-  },
-  {
-    name: "nonce",
-    type: "uint256"
-  },
-  {
-    name: "deadline",
-    type: "uint256"
-  },
-  ],
-};
 
 export default function Test() {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
   const signer = useEthersSigner();
 
+  const { mutate: postPermit, isLoading } = usePostPermit();
+
   const [amountToSwap, setAmountToSwap] = useState("0");
-
   const chainId = chain?.id || "";
-  const receiver = "0x43a04F19Cc140102501AcC9da48BF85f9EE8829f";
-  const tokenAddress = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
-
-  const amount = ethers.utils.parseUnits("2", 6);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const num = e.target.value.replaceAll(",", "");
@@ -54,65 +24,31 @@ export default function Test() {
   };
 
   const createPermit = async () => {
-    if (!address) return console.log("No address found.");
-    if (!chainId) return console.log("error getting chainId");
+    if (!address) return toast.error("No address found.");
+    if (!chainId) return toast.error("error getting chainId");
+    if (!signer) return toast.error("error getting signers");
 
-    const provider = getStaticProvider(chainId);
-    const token = new ethers.Contract(tokenAddress, ERC20ABI, provider)
+    const receiver = "0x43a04F19Cc140102501AcC9da48BF85f9EE8829f";
+    const tokenAddress = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+    const amount = ethers.utils.parseUnits("2", 6);
 
-    if (!token) return toast.error("soemthing went wrong fetching the token");
-
-    const deadline = dayjs().add(86400, "seconds").unix();
-
-    const nonces = await token.nonces(address);
-
-    const domain = {
-      name: await token.name(),
-      version: "2",
+    const body: PermitData = {
       chainId,
-      verifyingContract: token.address
-    };
-
-    const values = {
-      owner: address,
-      spender: receiver,
-      value: amount,
-      nonce: nonces,
-      deadline,
-    };
-
-    if (!signer) return console.error("Error getting signer");
-    console.log({ domain, types, values });
-    try {
-      const signature = await signer._signTypedData(domain, types, values);
-      console.log(signature);
-      // split the signature into its components
-      const sig = ethers.utils.splitSignature(signature);
-      console.log(sig)
-
-      // const recovered = ethers.utils.verifyTypedData(
-      //   domain,
-      //   types,
-      //   values,
-      //   sig
-      // );
-
-      approveSwapTransaction(
-        {
-          owner: address,
-          spender: receiver,
-          value: amount,
-          deadline: BigNumber.from(deadline),
-          v: sig.v,
-          r: sig.r,
-          s: sig.s,
-        },
-        tokenAddress
-      )
-
-    } catch (error: any) {
-      console.log(error);
+      tokenAddress,
+      userAddress: address,
+      signer,
+      recipient: receiver,
+      amount
     }
+
+    postPermit(body, {
+      async onSuccess() {
+        toast.success("Permit created");
+      },
+      onError() {
+        toast.error("Error creating permit", { id: "create-permit-error" });
+      }
+    });
   }
 
   return (

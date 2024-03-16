@@ -12,7 +12,7 @@ import Button from "./components/Button";
 import Swap from "./components/Swap";
 import Transfer from "./components/Transfer";
 
-const londrina = Londrina_Solid({ 
+const londrina = Londrina_Solid({
   weight: ["300", "400"],
   subsets: ['latin']
 })
@@ -25,27 +25,24 @@ export default function Home() {
     disabledTokens: TokenConfig[],
     onSelect: Dispatch<SetStateAction<undefined | TokenConfig>>,
   }>();
-  const [selectedMenu, setSelectedMenu] = useState<string>('swap'); 
+  const [selectedMenu, setSelectedMenu] = useState<string>('swap');
   const chainId = chain?.id;
   const currentChainOrDefaultChain = useMemo(() => getChainOrDefaultChain(chainId), [chainId]);
   const isChainSupported = useMemo(() => isSupportedChain(chainId), [chainId]);
-  
+
   const permitToken = async () => {
-    if(!isChainSupported) {
+    if (!isChainSupported) {
       console.error("Chain not supported")
       return
     }
-    
-    console.log("click");
-
   }
 
   return (
     <main className="min-w-screen min-h-screen bg-bg-gray text-white">
-      {tokenPopupPayload && <TokenSelectPopup 
+      {tokenPopupPayload && <TokenSelectPopup
         {...tokenPopupPayload}
         chainId={currentChainOrDefaultChain}
-        isOpen={!!tokenPopupPayload} 
+        isOpen={!!tokenPopupPayload}
         close={() => setTokenPopupPayload(undefined)}
       />}
 
@@ -66,15 +63,15 @@ export default function Home() {
             <Image src="/star.png" alt="star" width={40} height={50} className="absolute top-[-56px] right-4 z-0" />
 
             <div className="flex w-[150px] justify-between gap-x-2">
-              <Button 
-                onClick={() => setSelectedMenu('swap')} 
+              <Button
+                onClick={() => setSelectedMenu('swap')}
                 disabled={selectedMenu === 'swap'}
                 className={`px-4 ${selectedMenu === 'swap' ? 'bg-primary font-bold' : ''}`}
               >
                 Swap
               </Button>
-              <Button 
-                onClick={() => setSelectedMenu('transfer')}  
+              <Button
+                onClick={() => setSelectedMenu('transfer')}
                 disabled={selectedMenu === 'transfer'}
                 className={`px-4 ${selectedMenu === 'transfer' ? 'bg-primary font-bold' : ''}`}
               >
@@ -82,17 +79,17 @@ export default function Home() {
               </Button>
             </div>
 
-            {selectedMenu === 'swap' && 
-              <Swap 
-                isChainSupported={isChainSupported} 
+            {selectedMenu === 'swap' &&
+              <Swap
+                isChainSupported={isChainSupported}
                 currentChainOrDefaultChain={currentChainOrDefaultChain}
                 address={address}
-                chainId={chainId} 
+                chainId={chainId}
                 permitToken={permitToken}
               />
             }
 
-            {selectedMenu === 'transfer' && 
+            {selectedMenu === 'transfer' &&
               <Transfer
                 isChainSupported={isChainSupported}
                 address={address}
@@ -100,7 +97,7 @@ export default function Home() {
                 permitToken={permitToken}
               />
             }
-            
+
           </div>
         </div>
         <Image src="/king.png" alt="king" width={150} height={200} className="absolute bottom-0 left-24" />

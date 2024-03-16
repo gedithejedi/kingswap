@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 
 import "./globals.css";
 import Swap from "./swap";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/react-query";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,9 +20,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Swap>
-        <body className={inter.className}>{children}</body>
-      </Swap>
+      <QueryClientProvider client={queryClient}>
+        <Swap>
+          <body className={inter.className}>{children}</body>
+        </Swap>
+      </QueryClientProvider>
     </html>
   );
 }
