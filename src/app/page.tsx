@@ -91,8 +91,8 @@ export default function Home() {
         <div className="flex flex-col gap-y-5 items-center md:w-[80%] max-w-[600px]">
           <div className="flex flex-col items-center w-full">
             <div className="relative w-full">
-              <Image src="/star.png" alt="star" width={70} height={100} className="absolute top-[-94px] left-4" />
-              <Image src="/star.png" alt="star" width={40} height={50} className="absolute top-[-54px] right-4" />
+              <Image src="/star.png" alt="star" width={70} height={100} className="absolute top-[-94px] left-4 z-0" />
+              <Image src="/star.png" alt="star" width={40} height={50} className="absolute top-[-54px] right-4 z-0" />
               <PriceInput
                 chain={currentChainOrDefaultChain}
                 amountToSwap={amountToSwap}

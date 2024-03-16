@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { HttpTransport } from "viem";
 import { type PublicClient, usePublicClient, WalletClient, useWalletClient } from "wagmi";
 import { getPublicClient } from "wagmi/actions";
-import { getAccount, readContract } from '@wagmi/core'
+import { readContract } from '@wagmi/core'
 import { parseAbi } from 'viem'
 import { TokenConfig } from "@/helpers/types";
 
@@ -53,7 +53,6 @@ export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
   return useMemo(() => publicClientToProvider(publicClient), [publicClient]);
 }
 
-// TODO: make contract address flexible & work with native tokens
 export async function getBalance(address: `0x${string}`, token: TokenConfig, chainId: number) {
   if(token.isNative) {
     const provider = getStaticProvider(chainId);
