@@ -12,7 +12,6 @@ export default function Test() {
   const { chain } = useNetwork();
   const { address, isConnected } = useAccount();
   const signer = useEthersSigner();
-
   const { mutate: postPermit, isLoading } = usePostPermit();
 
   const [amountToSwap, setAmountToSwap] = useState("0");
