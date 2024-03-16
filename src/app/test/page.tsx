@@ -4,22 +4,35 @@ import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
 import { getStaticProvider, useEthersSigner } from "@/lib/wallet";
 import { NumericFormat } from "react-number-format";
 import { ChangeEvent, useState } from "react";
-import { Contract, BigNumber } from "ethers";
-
+import { ethers, BigNumber } from "ethers";
 import ERC20ABI from "@/lib/erc20Abi.json";
+
 import dayjs from "dayjs";
 import { approveSwapTransaction } from "../utils/fetchSwap";
+import toast from "react-hot-toast";
 
 const types = {
-  Person: [
-    { name: 'name', type: 'string' },
-    { name: 'wallet', type: 'address' }
+  Permit: [{
+    name: "owner",
+    type: "address"
+  },
+  {
+    name: "spender",
+    type: "address"
+  },
+  {
+    name: "value",
+    type: "uint256"
+  },
+  {
+    name: "nonce",
+    type: "uint256"
+  },
+  {
+    name: "deadline",
+    type: "uint256"
+  },
   ],
-  Mail: [
-    { name: 'from', type: 'Person' },
-    { name: 'to', type: 'Person' },
-    { name: 'contents', type: 'string' }
-  ]
 };
 
 export default function Test() {
@@ -30,76 +43,73 @@ export default function Test() {
   const [amountToSwap, setAmountToSwap] = useState("0");
 
   const chainId = chain?.id || "";
-  const contractAddress = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
-  const spender = '0x43a04F19Cc140102501AcC9da48BF85f9EE8829f';
-  const amount = "1000000000000000000";
+  const receiver = "0x43a04F19Cc140102501AcC9da48BF85f9EE8829f";
+  const tokenAddress = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+
+  const amount = ethers.utils.parseUnits("2", 6);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const num = e.target.value.replaceAll(",", "");
     setAmountToSwap(num);
   };
 
-  const splitSig = (sig: any) => {
-    const pureSig = sig.replace("0x", "")
-
-    const r = new Buffer(pureSig.substring(0, 64), 'hex')
-    const s = new Buffer(pureSig.substring(64, 128), 'hex')
-    const v = new Buffer((parseInt(pureSig.substring(128, 130), 16)).toString());
-
-    return { r, s, v }
-  }
-
   const createPermit = async () => {
     if (!address) return console.log("No address found.");
     if (!chainId) return console.log("error getting chainId");
-    const domain = {
-      name: "Kings Swap",
-      version: '1',
-      chainId,
-      verifyingContract: contractAddress //transaction to
-    };
+
+    const provider = getStaticProvider(chainId);
+    const token = new ethers.Contract(tokenAddress, ERC20ABI, provider)
+
+    if (!token) return toast.error("soemthing went wrong fetching the token");
 
     const deadline = dayjs().add(86400, "seconds").unix();
 
-    const value = {
-      from: {
-        name: 'From',
-        wallet: address // User wallet address
-      },
-      to: {
-        name: 'To',
-        wallet: spender // Uniswap contract?
-      },
-      contents: 'Send USDC from bank to secondary wallet',
-      duration: deadline,
+    const nonces = await token.nonces(address);
+
+    const domain = {
+      name: await token.name(),
+      version: "2",
+      chainId,
+      verifyingContract: token.address
+    };
+
+    const values = {
+      owner: address,
+      spender: receiver,
       value: amount,
+      nonce: nonces,
+      deadline,
     };
 
     if (!signer) return console.error("Error getting signer");
-
+    console.log({ domain, types, values });
     try {
-      const signature = await signer._signTypedData(domain, types, value);
-
+      const signature = await signer._signTypedData(domain, types, values);
       console.log(signature);
-      const split = splitSig(signature)
+      // split the signature into its components
+      const sig = ethers.utils.splitSignature(signature);
+      console.log(sig)
 
-      const permit = { ...split, signature }
-      // console.log(`r: 0x${permit.r.toString('hex')}, s: 0x${permit.s.toString('hex')}, v: ${permit.v}, sig: ${permit.signature}`);
-      console.log(permit);
-      console.log("deadline", deadline);
+      // const recovered = ethers.utils.verifyTypedData(
+      //   domain,
+      //   types,
+      //   values,
+      //   sig
+      // );
 
-      const provider = getStaticProvider(chainId);
-      approveSwapTransaction({
-        owner: address,
-        spender,
-        value: BigNumber.from(amount),
-        deadline: BigNumber.from(deadline),
-        v: permit.v,
-        r: permit.r,
-        s: permit.s,
-      })
-      const token = new Contract(address, ERC20ABI, provider);
-      token.permit()
+      approveSwapTransaction(
+        {
+          owner: address,
+          spender: receiver,
+          value: amount,
+          deadline: BigNumber.from(deadline),
+          v: sig.v,
+          r: sig.r,
+          s: sig.s,
+        },
+        tokenAddress
+      )
+
     } catch (error: any) {
       console.log(error);
     }

@@ -5,9 +5,9 @@ export interface Permit {
   spender: string;
   value: BigNumber
   deadline: BigNumber;
-  v: Buffer;
-  r: Buffer;
-  s: Buffer;
+  v: number;
+  r: string;
+  s: string;
 }
 
 // export const sendSwapTransaction = async (notificationPayload: {
@@ -28,18 +28,20 @@ export interface Permit {
 //   return { success, message };
 // };
 
-export const approveSwapTransaction = async (permit: Permit) => {
-  console.log(JSON.stringify(permit));
-
+export const approveSwapTransaction = async (
+  permit: Permit,
+  tokenAddress: string,
+) => {
   const result = await fetch("/api/approveSwap", {
     method: 'POST',
-    body: JSON.stringify({ permit }),
+    body: JSON.stringify({ permit, tokenAddress }),
     headers: {
       'content-type': 'application/json'
     }
   })
 
   const res = await result.json();
+  console.log(res);
   const { success, message } = res;
 
   return { success, message };
