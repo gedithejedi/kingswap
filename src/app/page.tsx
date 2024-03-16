@@ -4,10 +4,17 @@ import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import type { TokenConfig } from "@/helpers/types";
 import { getChainOrDefaultChain, isSupportedChain } from '@/helpers/network'
+import { Londrina_Solid } from 'next/font/google'
 
+import Image from "next/image";
 import TokenSelectPopup from "./components/TokenSelectPopup";
 import Button from "./components/Button";
 import PriceInput from "./components/PriceInput";
+
+const londrina = Londrina_Solid({ 
+  weight: ["300", "400"],
+  subsets: ['latin']
+})
 
 export default function Home() {
   const { chain } = useNetwork();
@@ -58,13 +65,15 @@ export default function Home() {
       </div>
 
       <div>
-        <h1 className="text-3xl font-bold text-center uppercase">Kingswap</h1>
+        <h1 className={`text-5xl tracking-wider font-bold text-center uppercase ${londrina.className}`}>Kingswap</h1>
       </div>
 
       <div className="flex flex-col items-center mt-10 gap-9">
         <div className="flex flex-col gap-y-5 items-center md:w-[80%] max-w-[600px]">
           <div className="flex flex-col items-center w-full">
             <div className="relative w-full">
+              <Image src="/star.png" alt="star" width={70} height={100} className="absolute top-[-94px] left-4" />
+              <Image src="/star.png" alt="star" width={40} height={50} className="absolute top-[-54px] right-4" />
               <PriceInput
                 amountToSwap={amountToSwap}
                 setAmountToSwap={setAmountToSwap}
@@ -76,7 +85,7 @@ export default function Home() {
                />
               <div className="absolute bottom-[-16px] w-full flex items-center justify-center">
                 <div
-                  className="bg-gray-light w-10 h-10 border-4 border-bg-gray rounded-lg flex items-center justify-center"
+                  className={`bg-gray-light border-bg-gray w-10 h-10 border-4 rounded-lg flex items-center justify-center ${isChainSupported ? "cursor-pointer hover:bg-primary": "cursor-not-allowed"}`}
                   onClick={() => {
                     const temp = tokenToSwapFrom;
                     setTokenToSwapFrom(tokenToSwapTo);
