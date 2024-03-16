@@ -101,7 +101,7 @@ export default function Swap({
                 </div>
                 <Button 
                     type="primary" 
-                    className="w-full text-lg py-3" 
+                    className="w-full text-lg py-3 font-semibold" 
                     onClick={permitToken}
                     disabled={isButtonDisabled || !doesUserHaveEnoughBalance}
                 >

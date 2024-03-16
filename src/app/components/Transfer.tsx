@@ -65,7 +65,7 @@ export default function Transfer({
 
                 <Button 
                     type="primary" 
-                    className="w-full text-lg py-3 mt-5" 
+                    className="w-full text-lg py-3 mt-5 font-semibold" 
                     onClick={permitToken}
                     disabled={isButtonDisabled}
                 >
