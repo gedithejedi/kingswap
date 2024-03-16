@@ -60,16 +60,8 @@ export default function TokenSelectPopup({
                                         <h2 className="text-lg font-semibold">Select a token</h2>
                                         <Button className="text-lg font-semibold bg-transparent hover:bg-transparent" onClick={close}>X</Button>
                                     </div>
-                                    <div className="w-full flex text-text-gray">
-                                        <p className="text-start font-semibold">Your tokens</p>
-                                        {/* TODO */}
-                                    </div>
-                                    
-                                    {/* Divider */}
-                                    <div className="h-[0.5px] w-full bg-text-gray"/>
                                     
                                     <div className="w-full flex flex-col gap-y-2">
-                                        <p className="text-start font-semibold text-text-gray">Popular tokens</p>
                                         <div className="flex flex-col gap-y-4 w-full overflow-y-scroll">
                                             {tokensByChain[chainId].map(token => {
                                                 const isDisabled = disabledTokens.some(disabledToken => disabledToken.symbol === token.symbol);

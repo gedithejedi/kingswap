@@ -45,7 +45,7 @@ export default function Home() {
       return ;
     }
     checkBalance();
-  }, [tokenToSwapFrom, amountToSwap, address]);
+  }, [chainId, tokenToSwapFrom, amountToSwap, address]);
 
   const doesUserHaveEnoughBalance = useMemo(() => {
     if(!tokenToSwapFrom || !amountToSwap) return true;
@@ -59,13 +59,7 @@ export default function Home() {
     }
     
     console.log("click");
-    // if (!address) return console.log("No address found.");
 
-    // const walletClient = getWalletClient(chainId.toString())
-    // const signature = await walletClient.signMessage({
-    //   address,
-    //   message: 'hello world',
-    // })
   }
 
   return (
