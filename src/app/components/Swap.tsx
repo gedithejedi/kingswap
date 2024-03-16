@@ -9,6 +9,7 @@ import {
 import type { TokenConfig } from "@/helpers/types";
 import type { Chains } from "@/helpers/network";
 import { getBalance } from "@/lib/wallet";
+import { tokensByChain } from "@/helpers/token";
 
 import Button from "../components/Button";
 import PriceInput from "../components/PriceInput";
@@ -64,6 +65,18 @@ export default function Swap({
     return userBalance.current >= parseFloat(amountToSwap.replace(/,/g, ""));
   }, [userBalance, amountToSwap, tokenToSwapFrom]);
 
+  const nativeToken = useMemo(
+    () =>
+      tokensByChain[currentChainOrDefaultChain].find((token) => token.isNative),
+    [currentChainOrDefaultChain]
+  );
+
+  useEffect(() => {
+    if (nativeToken) {
+      setTokenToSwapTo(nativeToken);
+    }
+  }, [nativeToken]);
+
   return (
     <div>
       {tokenPopupPayload && (
@@ -88,14 +101,7 @@ export default function Swap({
               disabled={!isChainSupported}
             />
             <div className="absolute bottom-[-16px] w-full flex items-center justify-center">
-              <div
-                className={`bg-gray-light border-bg-gray w-10 h-10 border-4 rounded-lg flex items-center justify-center ${isChainSupported ? "cursor-pointer hover:bg-primary" : "cursor-not-allowed"}`}
-                onClick={() => {
-                  const temp = tokenToSwapFrom;
-                  setTokenToSwapFrom(tokenToSwapTo);
-                  setTokenToSwapTo(temp);
-                }}
-              >
+              <div className="bg-gray-light border-bg-gray w-10 h-10 border-4 rounded-lg flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -122,7 +128,7 @@ export default function Swap({
             setTokenPopupPayload={setTokenPopupPayload}
             disabledTokens={tokenToSwapFrom ? [tokenToSwapFrom] : []}
             setSelectedToken={setTokenToSwapTo}
-            disabled={!isChainSupported}
+            disabled={true}
           />
         </div>
         <Button
