@@ -1,6 +1,7 @@
 import { BigNumber } from "ethers";
 import { NextResponse } from 'next/server';
 import ERC20ABI from "@/lib/erc20Abi.json";
+import KingSwapAbi from "@/lib/kingSwapAbi.json";
 import { createPublicClient, createWalletClient, http } from "viem";
 import { sepolia } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
@@ -41,22 +42,11 @@ export async function POST(req: Request) {
   try {
     const account = privateKeyToAccount(privateKey as any);
 
-    console.log("private key");
-    console.log(privateKey);
-    console.log(account.publicKey);
-
     const client = createWalletClient({
       account,
       chain: sepolia,
       transport: http()
     })
-
-    console.log({
-      account,
-      address: tokenAddress,
-      functionName: 'permit',
-      args: [owner, receiver, BigNumber.from(value.hex).toString(), BigNumber.from(deadline.hex).toString(), v, r, s],
-    });
 
     const { request } = await publicClient.simulateContract({
       account,
@@ -65,31 +55,8 @@ export async function POST(req: Request) {
       functionName: 'permit',
       args: [owner, receiver, BigNumber.from(value.hex), BigNumber.from(deadline.hex), v, r, s],
     })
+
     await client.writeContract(request)
-
-    // const recovered = ethers.utils.verifyTypedData(
-    //   domain,
-    //   types,
-    //   values,
-    //   sig
-    // );
-
-    // gasPrice = await provider.getGasPrice()
-
-    // let tx = await myToken.connect(tokenReceiver).permit(
-    //   // tokenOwner.address,
-    //   // tokenReceiver.address,
-    //   value,
-    //   deadline,
-    //   sig.v,
-    //   sig.r,
-    //   sig.s, {
-    //   gasPrice: gasPrice,
-    //   gasLimit: 80000 //hardcoded gas limit; change if needed
-    // }
-    // );
-
-    // await tx.wait(2)
 
     return NextResponse.json({ message: 'backend went well' })
   } catch (error: any) {
