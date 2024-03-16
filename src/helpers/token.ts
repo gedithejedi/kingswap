@@ -9,7 +9,7 @@ export const tokensByChain: Record<Chains, TokenConfig[]> = {
       imgUrl:
         "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
       isNative: true,
-      address: "0x",
+      address: "0x0",
     },
     {
       title: "USDCoin",
@@ -26,7 +26,7 @@ export const tokensByChain: Record<Chains, TokenConfig[]> = {
       imgUrl:
         "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
       isNative: true,
-      address: "0x",
+      address: "0x0",
     },
     {
       title: "USDCoin",
@@ -43,7 +43,7 @@ export const tokensByChain: Record<Chains, TokenConfig[]> = {
       imgUrl:
         "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
       isNative: true,
-      address: "0x",
+      address: "0x0",
     },
     {
       title: "USDCoin",
