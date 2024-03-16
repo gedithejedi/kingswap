@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { TokenConfig } from "@/helpers/types";
 import type { Chains } from "@/helpers/network";
 import { getBalance } from "@/lib/wallet";
@@ -14,7 +21,7 @@ type SwapProps = {
   chainId?: number;
   permitToken: () => void;
   isLoading?: boolean;
-}
+};
 
 export default function Swap({
   isChainSupported,
@@ -24,13 +31,15 @@ export default function Swap({
   isLoading,
   permitToken,
 }: SwapProps) {
-  const [tokenToSwapFrom, setTokenToSwapFrom] = useState<TokenConfig | undefined>();
+  const [tokenToSwapFrom, setTokenToSwapFrom] = useState<
+    TokenConfig | undefined
+  >();
   const [tokenToSwapTo, setTokenToSwapTo] = useState<TokenConfig | undefined>();
   const [amountToSwap, setAmountToSwap] = useState<string | undefined>();
   const [tokenPopupPayload, setTokenPopupPayload] = useState<{
-    selectedToken?: TokenConfig,
-    disabledTokens: TokenConfig[],
-    onSelect: Dispatch<SetStateAction<undefined | TokenConfig>>,
+    selectedToken?: TokenConfig;
+    disabledTokens: TokenConfig[];
+    onSelect: Dispatch<SetStateAction<undefined | TokenConfig>>;
   }>();
   const isButtonDisabled = !isChainSupported || amountToSwap === undefined;
 
@@ -40,9 +49,11 @@ export default function Swap({
       if (!address || !tokenToSwapFrom || !chainId) {
         userBalance.current = 0;
         return;
-      };
+      }
 
-      userBalance.current = Number(await getBalance(address, tokenToSwapFrom, chainId));
+      userBalance.current = Number(
+        await getBalance(address, tokenToSwapFrom, chainId)
+      );
       return;
     }
     checkBalance();
@@ -50,17 +61,19 @@ export default function Swap({
 
   const doesUserHaveEnoughBalance = useMemo(() => {
     if (!tokenToSwapFrom || !amountToSwap) return true;
-    return userBalance.current >= parseFloat(amountToSwap.replace(/,/g, ''));
+    return userBalance.current >= parseFloat(amountToSwap.replace(/,/g, ""));
   }, [userBalance, amountToSwap, tokenToSwapFrom]);
 
   return (
     <div>
-      {tokenPopupPayload && <TokenSelectPopup
-        {...tokenPopupPayload}
-        chainId={currentChainOrDefaultChain}
-        isOpen={!!tokenPopupPayload}
-        close={() => setTokenPopupPayload(undefined)}
-      />}
+      {tokenPopupPayload && (
+        <TokenSelectPopup
+          {...tokenPopupPayload}
+          chainId={currentChainOrDefaultChain}
+          isOpen={!!tokenPopupPayload}
+          close={() => setTokenPopupPayload(undefined)}
+        />
+      )}
       <div className="w-full flex flex-col gap-y-5 items-center">
         <div className="flex flex-col items-center w-full">
           <div className="w-full relative">
@@ -83,8 +96,19 @@ export default function Swap({
                   setTokenToSwapTo(temp);
                 }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-6 h-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 17.25 12 21m0 0-3.75-3.75M12 21V3"
+                  />
                 </svg>
               </div>
             </div>
@@ -109,18 +133,18 @@ export default function Swap({
           disabled={isButtonDisabled || !doesUserHaveEnoughBalance}
         >
           {!address
-            ? 'Please connect wallet'
+            ? "Please connect wallet"
             : isButtonDisabled
               ? "Permit"
-              : `Permit ${amountToSwap} ${tokenToSwapFrom?.symbol ?? 'ETH'}`
-          }
+              : `Permit ${amountToSwap} ${tokenToSwapFrom?.symbol ?? "ETH"}`}
         </Button>
-        {!doesUserHaveEnoughBalance
-          && <p className="text-red-400 text-start w-full">
-            It looks like you don&apos;t have enough balance to swap {amountToSwap} {tokenToSwapFrom?.symbol ?? 'ETH'}
+        {!doesUserHaveEnoughBalance && (
+          <p className="text-red-400 text-start w-full">
+            It looks like you don&apos;t have enough balance to swap{" "}
+            {amountToSwap} {tokenToSwapFrom?.symbol ?? "ETH"}
           </p>
-        }
+        )}
       </div>
     </div>
-  )
+  );
 }

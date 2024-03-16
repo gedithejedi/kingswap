@@ -12,33 +12,35 @@ type TransferProps = {
   address?: `0x${string}`;
   permitToken: () => void;
   isLoading: boolean;
-}
+};
 
 export default function Transfer({
   isChainSupported,
   currentChainOrDefaultChain,
   address,
   permitToken,
-  isLoading
+  isLoading,
 }: TransferProps) {
   const [amount, setAmount] = useState<string | undefined>();
   const [receiver, setReceiver] = useState<string | undefined>();
   const [selectedToken, setSelectedToken] = useState<TokenConfig | undefined>();
   const [tokenPopupPayload, setTokenPopupPayload] = useState<{
-    selectedToken?: TokenConfig,
-    disabledTokens: TokenConfig[],
-    onSelect: Dispatch<SetStateAction<undefined | TokenConfig>>,
+    selectedToken?: TokenConfig;
+    disabledTokens: TokenConfig[];
+    onSelect: Dispatch<SetStateAction<undefined | TokenConfig>>;
   }>();
   const isButtonDisabled = !isChainSupported || amount === undefined;
 
   return (
     <div>
-      {tokenPopupPayload && <TokenSelectPopup
-        {...tokenPopupPayload}
-        chainId={currentChainOrDefaultChain}
-        isOpen={!!tokenPopupPayload}
-        close={() => setTokenPopupPayload(undefined)}
-      />}
+      {tokenPopupPayload && (
+        <TokenSelectPopup
+          {...tokenPopupPayload}
+          chainId={currentChainOrDefaultChain}
+          isOpen={!!tokenPopupPayload}
+          close={() => setTokenPopupPayload(undefined)}
+        />
+      )}
 
       <div className="flex flex-col w-full">
         <PriceInput
@@ -58,7 +60,7 @@ export default function Transfer({
             <input
               type="text"
               value={receiver}
-              onChange={e => setReceiver(e.target.value)}
+              onChange={(e) => setReceiver(e.target.value)}
               className="bg-gray-light w-full focus:outline-none text-xl "
               placeholder="0x23dfc90..."
             />
@@ -73,13 +75,12 @@ export default function Transfer({
           disabled={isButtonDisabled}
         >
           {!address
-            ? 'Please connect wallet'
+            ? "Please connect wallet"
             : isButtonDisabled
               ? "Permit"
-              : `Permit ${amount} ${selectedToken?.symbol ?? 'ETH'}`
-          }
+              : `Permit ${amount} ${selectedToken?.symbol ?? "ETH"}`}
         </Button>
       </div>
     </div>
-  )
+  );
 }

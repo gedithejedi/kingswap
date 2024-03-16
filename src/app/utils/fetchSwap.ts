@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 export interface Permit {
   owner: string;
   spender: string;
-  value: BigNumber
+  value: BigNumber;
   deadline: BigNumber;
   v: number;
   r: string;
@@ -30,15 +30,15 @@ export interface Permit {
 
 export const approveSwapTransaction = async (
   permit: Permit,
-  tokenAddress: string,
+  tokenAddress: string
 ) => {
   const result = await fetch("/api/approveSwap", {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify({ permit, tokenAddress }),
     headers: {
-      'content-type': 'application/json'
-    }
-  })
+      "content-type": "application/json",
+    },
+  });
 
   const res = await result.json();
   console.log(res);

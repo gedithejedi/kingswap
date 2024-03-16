@@ -1,1 +1,230 @@
-[{"type":"constructor","inputs":[{"name":"_router","type":"address","internalType":"contract CLSwapRouter"}],"stateMutability":"nonpayable"},{"type":"function","name":"router","inputs":[],"outputs":[{"name":"","type":"address","internalType":"contract CLSwapRouter"}],"stateMutability":"view"},{"type":"function","name":"swap","inputs":[{"name":"params","type":"tuple","internalType":"struct ICLSwapRouterBase.V4CLExactInputParams","components":[{"name":"currencyIn","type":"address","internalType":"Currency"},{"name":"path","type":"tuple[]","internalType":"struct ISwapRouterBase.PathKey[]","components":[{"name":"intermediateCurrency","type":"address","internalType":"Currency"},{"name":"fee","type":"uint24","internalType":"uint24"},{"name":"hooks","type":"address","internalType":"contract IHooks"},{"name":"hookData","type":"bytes","internalType":"bytes"},{"name":"poolManager","type":"address","internalType":"contract IPoolManager"},{"name":"parameters","type":"bytes32","internalType":"bytes32"}]},{"name":"recipient","type":"address","internalType":"address"},{"name":"amountIn","type":"uint128","internalType":"uint128"},{"name":"amountOutMinimum","type":"uint128","internalType":"uint128"}]},{"name":"amount","type":"uint256","internalType":"uint256"},{"name":"permitDeadline","type":"uint256","internalType":"uint256"},{"name":"v","type":"uint8","internalType":"uint8"},{"name":"r","type":"bytes32","internalType":"bytes32"},{"name":"s","type":"bytes32","internalType":"bytes32"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"swapSingle","inputs":[{"name":"params","type":"tuple","internalType":"struct ICLSwapRouterBase.V4CLExactInputSingleParams","components":[{"name":"poolKey","type":"tuple","internalType":"struct PoolKey","components":[{"name":"currency0","type":"address","internalType":"Currency"},{"name":"currency1","type":"address","internalType":"Currency"},{"name":"hooks","type":"address","internalType":"contract IHooks"},{"name":"poolManager","type":"address","internalType":"contract IPoolManager"},{"name":"fee","type":"uint24","internalType":"uint24"},{"name":"parameters","type":"bytes32","internalType":"bytes32"}]},{"name":"zeroForOne","type":"bool","internalType":"bool"},{"name":"recipient","type":"address","internalType":"address"},{"name":"amountIn","type":"uint128","internalType":"uint128"},{"name":"amountOutMinimum","type":"uint128","internalType":"uint128"},{"name":"sqrtPriceLimitX96","type":"uint160","internalType":"uint160"},{"name":"hookData","type":"bytes","internalType":"bytes"}]},{"name":"amount","type":"uint256","internalType":"uint256"},{"name":"permitDeadline","type":"uint256","internalType":"uint256"},{"name":"v","type":"uint8","internalType":"uint8"},{"name":"r","type":"bytes32","internalType":"bytes32"},{"name":"s","type":"bytes32","internalType":"bytes32"}],"outputs":[],"stateMutability":"nonpayable"}]
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "_router",
+        "type": "address",
+        "internalType": "contract CLSwapRouter"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "router",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract CLSwapRouter"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "swap",
+    "inputs": [
+      {
+        "name": "params",
+        "type": "tuple",
+        "internalType": "struct ICLSwapRouterBase.V4CLExactInputParams",
+        "components": [
+          {
+            "name": "currencyIn",
+            "type": "address",
+            "internalType": "Currency"
+          },
+          {
+            "name": "path",
+            "type": "tuple[]",
+            "internalType": "struct ISwapRouterBase.PathKey[]",
+            "components": [
+              {
+                "name": "intermediateCurrency",
+                "type": "address",
+                "internalType": "Currency"
+              },
+              {
+                "name": "fee",
+                "type": "uint24",
+                "internalType": "uint24"
+              },
+              {
+                "name": "hooks",
+                "type": "address",
+                "internalType": "contract IHooks"
+              },
+              {
+                "name": "hookData",
+                "type": "bytes",
+                "internalType": "bytes"
+              },
+              {
+                "name": "poolManager",
+                "type": "address",
+                "internalType": "contract IPoolManager"
+              },
+              {
+                "name": "parameters",
+                "type": "bytes32",
+                "internalType": "bytes32"
+              }
+            ]
+          },
+          {
+            "name": "recipient",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "amountIn",
+            "type": "uint128",
+            "internalType": "uint128"
+          },
+          {
+            "name": "amountOutMinimum",
+            "type": "uint128",
+            "internalType": "uint128"
+          }
+        ]
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "permitDeadline",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "v",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "r",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "s",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "swapSingle",
+    "inputs": [
+      {
+        "name": "params",
+        "type": "tuple",
+        "internalType": "struct ICLSwapRouterBase.V4CLExactInputSingleParams",
+        "components": [
+          {
+            "name": "poolKey",
+            "type": "tuple",
+            "internalType": "struct PoolKey",
+            "components": [
+              {
+                "name": "currency0",
+                "type": "address",
+                "internalType": "Currency"
+              },
+              {
+                "name": "currency1",
+                "type": "address",
+                "internalType": "Currency"
+              },
+              {
+                "name": "hooks",
+                "type": "address",
+                "internalType": "contract IHooks"
+              },
+              {
+                "name": "poolManager",
+                "type": "address",
+                "internalType": "contract IPoolManager"
+              },
+              {
+                "name": "fee",
+                "type": "uint24",
+                "internalType": "uint24"
+              },
+              {
+                "name": "parameters",
+                "type": "bytes32",
+                "internalType": "bytes32"
+              }
+            ]
+          },
+          {
+            "name": "zeroForOne",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "recipient",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "amountIn",
+            "type": "uint128",
+            "internalType": "uint128"
+          },
+          {
+            "name": "amountOutMinimum",
+            "type": "uint128",
+            "internalType": "uint128"
+          },
+          {
+            "name": "sqrtPriceLimitX96",
+            "type": "uint160",
+            "internalType": "uint160"
+          },
+          {
+            "name": "hookData",
+            "type": "bytes",
+            "internalType": "bytes"
+          }
+        ]
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "permitDeadline",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "v",
+        "type": "uint8",
+        "internalType": "uint8"
+      },
+      {
+        "name": "r",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "s",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  }
+]

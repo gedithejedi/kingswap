@@ -19,15 +19,16 @@ export interface PermitData {
 
 const postPermit = async (data: PermitData) => {
   try {
-    const { tokenAddress, chainId, userAddress, signer, recipient, amount } = data;
+    const { tokenAddress, chainId, userAddress, signer, recipient, amount } =
+      data;
 
     const provider = getStaticProvider(chainId);
-    const token = new ethers.Contract(tokenAddress, ERC20ABI, provider)
+    const token = new ethers.Contract(tokenAddress, ERC20ABI, provider);
 
     if (!token) {
-      toast.error("soemthing went wrong fetching the token")
+      toast.error("soemthing went wrong fetching the token");
       return;
-    };
+    }
 
     const deadline = dayjs().add(86400, "seconds").unix();
 
@@ -37,7 +38,7 @@ const postPermit = async (data: PermitData) => {
       name: await token.name(),
       version: "2",
       chainId,
-      verifyingContract: token.address
+      verifyingContract: token.address,
     };
 
     const values = {
@@ -65,8 +66,7 @@ const postPermit = async (data: PermitData) => {
           s: sig.s,
         },
         tokenAddress
-      )
-
+      );
     } catch (error: any) {
       console.log(error);
     }
@@ -82,6 +82,6 @@ export const usePostPermit = () => {
 
   return useMutation({
     mutationFn: (data: PermitData): Promise<void> => postPermit(data),
-    onSuccess: () => queryClient.invalidateQueries(["permit"])
+    onSuccess: () => queryClient.invalidateQueries(["permit"]),
   });
 };

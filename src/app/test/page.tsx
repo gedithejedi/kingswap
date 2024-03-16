@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useAccount, useNetwork } from "wagmi";
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
 import { useEthersSigner } from "@/lib/wallet";
@@ -37,8 +37,8 @@ export default function Test() {
       userAddress: address,
       signer,
       recipient: receiver,
-      amount
-    }
+      amount,
+    };
 
     postPermit(body, {
       async onSuccess() {
@@ -46,15 +46,15 @@ export default function Test() {
       },
       onError() {
         toast.error("Error creating permit", { id: "create-permit-error" });
-      }
+      },
     });
-  }
+  };
 
   return (
     <main className="flex flex-col">
       <div className="w-full flex justify-end py-3 px-4">
         <div className="w-60">
-          <DynamicWidget variant='modal' />
+          <DynamicWidget variant="modal" />
         </div>
       </div>
 
@@ -69,8 +69,8 @@ export default function Test() {
           placeholder={"0.00"}
           onChange={handleChange}
           value={amountToSwap}
-        // error={error}
-        // disabled={disabled}
+          // error={error}
+          // disabled={disabled}
         />
         <button
           disabled={!address}
@@ -87,6 +87,6 @@ export default function Test() {
           Call backend
         </button>
       </div>
-    </main >
+    </main>
   );
 }
