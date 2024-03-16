@@ -1,10 +1,15 @@
 import { providers, utils } from "ethers";
 import { useMemo } from "react";
 import { HttpTransport } from "viem";
-import { type PublicClient, usePublicClient, WalletClient, useWalletClient } from "wagmi";
+import {
+  type PublicClient,
+  usePublicClient,
+  WalletClient,
+  useWalletClient,
+} from "wagmi";
 import { getPublicClient } from "wagmi/actions";
-import { readContract } from '@wagmi/core'
-import { parseAbi } from 'viem'
+import { readContract } from "@wagmi/core";
+import { parseAbi } from "viem";
 import { TokenConfig } from "@/helpers/types";
 
 export const getStaticProvider = (chainId: number) => {
@@ -18,7 +23,7 @@ export function walletClientToSigner(walletClient: WalletClient) {
   const network = {
     chainId: chain.id,
     name: chain.name,
-    ensAddress: chain.contracts?.ensRegistry?.address
+    ensAddress: chain.contracts?.ensRegistry?.address,
   };
   const provider = new providers.Web3Provider(transport, network);
   const signer = provider.getSigner(account.address);
@@ -27,7 +32,10 @@ export function walletClientToSigner(walletClient: WalletClient) {
 
 export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
   const { data: walletClient } = useWalletClient({ chainId });
-  return useMemo(() => (walletClient ? walletClientToSigner(walletClient) : undefined), [walletClient]);
+  return useMemo(
+    () => (walletClient ? walletClientToSigner(walletClient) : undefined),
+    [walletClient]
+  );
 }
 
 // Provider
@@ -36,7 +44,7 @@ export function publicClientToProvider(publicClient: PublicClient) {
   const network = {
     chainId: chain.id,
     name: chain.name,
-    ensAddress: chain.contracts?.ensRegistry?.address
+    ensAddress: chain.contracts?.ensRegistry?.address,
   };
   if (transport.type === "fallback") {
     return new providers.FallbackProvider(
@@ -53,16 +61,20 @@ export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
   return useMemo(() => publicClientToProvider(publicClient), [publicClient]);
 }
 
-export async function getBalance(address: `0x${string}`, token: TokenConfig, chainId: number) {
-  if(token.isNative) {
+export async function getBalance(
+  address: `0x${string}`,
+  token: TokenConfig,
+  chainId: number
+) {
+  if (token.isNative) {
     const provider = getStaticProvider(chainId);
     return utils.formatEther(await provider.getBalance(address));
   }
 
-  return readContract({ 
+  return readContract({
     address: token.address,
-    abi: parseAbi(['function balanceOf(address) view returns (uint256)']),
-    functionName: 'balanceOf',
+    abi: parseAbi(["function balanceOf(address) view returns (uint256)"]),
+    functionName: "balanceOf",
     args: [address],
-  })
+  });
 }

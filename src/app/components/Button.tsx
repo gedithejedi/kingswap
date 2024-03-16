@@ -1,13 +1,13 @@
-import { Spinner } from "./Spinner"
+import { Spinner } from "./Spinner";
 
 type ButtonProps = {
-  type?: 'primary' | 'secondary'
-  className?: string
-  children: React.ReactNode
-  onClick: () => void
-  disabled?: boolean
-  isLoading?: boolean
-}
+  type?: "primary" | "secondary";
+  className?: string;
+  children: React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  isLoading?: boolean;
+};
 
 export default function Button({
   type,
@@ -17,8 +17,12 @@ export default function Button({
   disabled,
   isLoading,
 }: ButtonProps) {
-  const colorStyle = type === 'primary' ? `bg-primary ${disabled ? '' : 'hover:bg-primary-focus'}` : `bg-gray-dark ${disabled ? '' : 'hover:bg-gray-darker'}`
-  const disabledStyle = disabled || isLoading ? 'cursor-not-allowed opacity-50' : ''
+  const colorStyle =
+    type === "primary"
+      ? `bg-primary ${disabled ? "" : "hover:bg-primary-focus"}`
+      : `bg-gray-dark ${disabled ? "" : "hover:bg-gray-darker"}`;
+  const disabledStyle =
+    disabled || isLoading ? "cursor-not-allowed opacity-50" : "";
 
   return (
     <button
@@ -29,5 +33,5 @@ export default function Button({
       {isLoading && <Spinner />}
       {children}
     </button>
-  )
+  );
 }
