@@ -1,4 +1,3 @@
-import { getStaticProvider } from "@/lib/wallet";
 import ERC20ABI from "@/lib/erc20Abi.json";
 import { ethers, BigNumber } from "ethers";
 
@@ -6,24 +5,22 @@ import dayjs from "dayjs";
 import { approveSwapTransaction } from "../utils/fetchSwap";
 import toast from "react-hot-toast";
 import { types } from "../utils/permit";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 export interface PermitData {
   chainId: number;
   tokenAddress: string;
   userAddress: string;
   signer: ethers.providers.JsonRpcSigner;
+  provider: ethers.providers.JsonRpcProvider | ethers.providers.FallbackProvider;
   recipient: string;
   amount: BigNumber;
 }
 
 const postPermit = async (data: PermitData) => {
   try {
-    const { tokenAddress, chainId, userAddress, signer, recipient, amount } =
-      data;
-
-    const provider = getStaticProvider(chainId);
-    const token = new ethers.Contract(tokenAddress, ERC20ABI, provider);
+    const { tokenAddress, chainId, userAddress, signer, recipient, amount, provider } = data;
+    const token = new ethers.Contract(tokenAddress, ERC20ABI, provider)
 
     if (!token) {
       toast.error("soemthing went wrong fetching the token");
@@ -78,10 +75,7 @@ const postPermit = async (data: PermitData) => {
 };
 
 export const usePostPermit = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (data: PermitData): Promise<void> => postPermit(data),
-    onSuccess: () => queryClient.invalidateQueries(["permit"]),
   });
 };

@@ -20,7 +20,7 @@ type SwapProps = {
   currentChainOrDefaultChain: Chains;
   address?: `0x${string}`;
   chainId?: number;
-  permitToken: () => void;
+  permitToken: (amount: string, tokenAddress: string) => void;
   isLoading?: boolean;
 };
 
@@ -135,7 +135,7 @@ export default function Swap({
           isLoading={isLoading}
           type="primary"
           className="w-full text-lg py-3 font-semibold"
-          onClick={permitToken}
+          onClick={() => permitToken(amountToSwap || "0", tokenToSwapFrom?.address || "")}
           disabled={isButtonDisabled || !doesUserHaveEnoughBalance}
         >
           {!address
