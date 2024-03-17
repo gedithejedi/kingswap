@@ -24,7 +24,6 @@ type PriceInputProps = {
 };
 
 export default function PriceInput({
-  chain,
   isNumberInputDisabled,
   amount,
   setAmount,
@@ -36,12 +35,12 @@ export default function PriceInput({
   label,
 }: PriceInputProps) {
   const priceInUSDC = useMemo(() => {
-    if (!selectedToken || amount === undefined || amount === "") {
-      return undefined;
-    }
-
-    return parseFloat(amount.replace(/,/g, ""));
-  }, [chain, amount, selectedToken]);
+    // TODO: add price calculation
+    // if (!selectedToken || amount === undefined || amount === "") {
+    return undefined;
+    // }
+    // return parseFloat(amount.replace(/,/g, ""));
+  }, []);
 
   return (
     <div className="flex gap-2 items-center bg-gray-light p-4 w-full rounded-lg mb-1">
@@ -51,7 +50,7 @@ export default function PriceInput({
           <NumericFormat
             thousandSeparator={","}
             allowNegative={false}
-            className="bg-gray-light w-full focus:outline-none text-3xl p-2"
+            className="bg-gray-light w-full focus:outline-none text-xl p-2"
             placeholder={"0.00"}
             onChange={(e) => setAmount(e.target?.value)}
             value={amount}
@@ -60,11 +59,11 @@ export default function PriceInput({
           />
         </label>
         {priceInUSDC !== undefined && (
-          <p className="text-sm">$ {priceInUSDC.toFixed(3)}</p>
+          <p className="text-sm">$ {priceInUSDC}</p>
         )}
       </div>
       <Button
-        className="flex justify-center items-center rounded-3xl text-base px-4 min-w-32 h-12 bg-gray-dark"
+        className="flex justify-center items-center rounded-2xl text-base px-4 min-w-32 h-12 bg-gray-dark"
         onClick={() =>
           setTokenPopupPayload({
             selectedToken,
@@ -95,7 +94,7 @@ export default function PriceInput({
             >
               <path
                 strokeLinecap="round"
-                stroke-linejoin="round"
+                strokeLinejoin="round"
                 d="m19.5 8.25-7.5 7.5-7.5-7.5"
               />
             </svg>
