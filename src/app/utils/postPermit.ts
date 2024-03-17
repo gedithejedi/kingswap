@@ -51,7 +51,17 @@ const postPermit = async (data: PermitData) => {
     try {
       const signature = await signer._signTypedData(domain, types, values);
       const sig = ethers.utils.splitSignature(signature);
-
+      console.log({
+        owner: userAddress,
+        spender: recipient,
+        value: amount,
+        deadline: BigNumber.from(deadline),
+        v: sig.v,
+        r: sig.r,
+        s: sig.s,
+      },
+        tokenAddress,
+        chainId.toString());
       approveSwapTransaction(
         {
           owner: userAddress,
@@ -62,7 +72,8 @@ const postPermit = async (data: PermitData) => {
           r: sig.r,
           s: sig.s,
         },
-        tokenAddress
+        tokenAddress,
+        chainId.toString()
       );
     } catch (error: any) {
       console.log(error);

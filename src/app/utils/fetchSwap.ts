@@ -30,11 +30,12 @@ export interface Permit {
 
 export const approveSwapTransaction = async (
   permit: Permit,
-  tokenAddress: string
+  tokenAddress: string,
+  chainId: string
 ) => {
   const result = await fetch("/api/approveSwap", {
     method: "POST",
-    body: JSON.stringify({ permit, tokenAddress }),
+    body: JSON.stringify({ permit, tokenAddress, chainId }),
     headers: {
       "content-type": "application/json",
     },

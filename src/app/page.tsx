@@ -3,7 +3,7 @@ import { useAccount, useNetwork } from "wagmi";
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import type { TokenConfig } from "@/helpers/types";
-import { getChainOrDefaultChain, isSupportedChain } from "@/helpers/network";
+import { Chains, getChainOrDefaultChain, isSupportedChain } from "@/helpers/network";
 import { Londrina_Solid } from "next/font/google";
 
 import Image from "next/image";
@@ -16,6 +16,7 @@ import { getStaticProvider, useEthersSigner } from "@/lib/wallet";
 import { PermitData, usePostPermit } from "./utils/postPermit";
 import Erc20Abi from "@/lib/erc20Abi.json";
 import { ethers } from "ethers";
+import { contractsByChain } from "@/helpers/contract";
 
 const londrina = Londrina_Solid({
   weight: ["300", "400"],
@@ -51,7 +52,7 @@ export default function Home() {
     if (!tokenAddress) return toast.error("Please select a token");
 
     setIsLoading(true);
-    const receiver = "0x43a04F19Cc140102501AcC9da48BF85f9EE8829f";
+    const receiver = contractsByChain[chainId.toString() as Chains].kingSwap;
 
     const provider = getStaticProvider(chainId);
     const token = new ethers.Contract(tokenAddress, Erc20Abi, provider);
