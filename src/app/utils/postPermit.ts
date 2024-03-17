@@ -1,6 +1,5 @@
 import ERC20ABI from "@/lib/erc20Abi.json";
 import { ethers, BigNumber } from "ethers";
-import Alert from "../components/Alert";
 
 import dayjs from "dayjs";
 import { approveSwapTransaction } from "../utils/fetchSwap";
