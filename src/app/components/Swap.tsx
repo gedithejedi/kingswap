@@ -193,8 +193,8 @@ export default function Swap({
           {!address
             ? "Please connect wallet"
             : isButtonDisabled
-              ? "Permit"
-              : `Permit ${amountToSwap} ${tokenToSwapFrom?.symbol ?? "ETH"}`}
+              ? "Swap"
+              : `Swap ${amountToSwap} ${tokenToSwapFrom?.symbol ?? "ETH"}`}
         </Button>
         {(swapPrices.current || isFetchingPrice) && (
           <div className="w-full flex justify-between">
