@@ -72,7 +72,7 @@ export async function POST(req: Request) {
           false,
           owner,
           BigNumber.from(value.hex),// amountIn,
-          amountToReceive, // amountOutMinimum, .3%
+          0, // amountOutMinimum, .3%
           0, // sqrtPriceLimitX96,
           "0x0000000000000000000000000000000000000000"// hookData,
         ],
