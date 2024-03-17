@@ -23,11 +23,13 @@ export default function Transfer({
 }: TransferProps) {
   const [amount, setAmount] = useState<string | undefined>();
   const [receiver, setReceiver] = useState<string | undefined>();
-  const [selectedToken, setSelectedToken] = useState<TokenConfig | undefined>();
+  const [selectedToken, setSelectedToken] = useState<
+    TokenConfig | undefined | null
+  >();
   const [tokenPopupPayload, setTokenPopupPayload] = useState<{
-    selectedToken?: TokenConfig;
+    selectedToken?: TokenConfig | null;
     disabledTokens: TokenConfig[];
-    onSelect: Dispatch<SetStateAction<undefined | TokenConfig>>;
+    onSelect: Dispatch<SetStateAction<undefined | TokenConfig | null>>;
   }>();
   const isButtonDisabled = !isChainSupported || amount === undefined;
 
@@ -71,7 +73,9 @@ export default function Transfer({
           isLoading={isLoading}
           type="primary"
           className="w-full text-lg py-3 mt-5 font-semibold"
-          onClick={() => permitToken(amount || "0", selectedToken?.address || "")}
+          onClick={() =>
+            permitToken(amount || "0", selectedToken?.address || "")
+          }
           disabled={isButtonDisabled}
         >
           {!address

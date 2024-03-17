@@ -12,14 +12,14 @@ type PriceInputProps = {
   isNumberInputDisabled?: boolean;
   amount?: string;
   setAmount: (value: string) => void;
-  selectedToken?: TokenConfig;
+  selectedToken?: TokenConfig | null;
   setTokenPopupPayload: (payload: {
-    selectedToken?: TokenConfig;
+    selectedToken?: TokenConfig | null;
     disabledTokens: TokenConfig[];
-    onSelect: Dispatch<SetStateAction<undefined | TokenConfig>>;
+    onSelect: Dispatch<SetStateAction<undefined | TokenConfig | null>>;
   }) => void;
   disabledTokens: TokenConfig[];
-  setSelectedToken: Dispatch<SetStateAction<undefined | TokenConfig>>;
+  setSelectedToken: Dispatch<SetStateAction<undefined | TokenConfig | null>>;
   disabled?: boolean;
   label?: string;
   isLoading?: boolean;

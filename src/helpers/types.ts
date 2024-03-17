@@ -5,4 +5,5 @@ export declare interface TokenConfig {
   isNative?: boolean;
   imgUrl?: string;
   decimals: number;
+  chainId: number;
 }

@@ -35,22 +35,29 @@ export default function Swap({
   permitToken,
 }: SwapProps) {
   const [tokenToSwapFrom, setTokenToSwapFrom] = useState<
-    TokenConfig | undefined
+    TokenConfig | undefined | null
   >();
-  const [tokenToSwapTo, setTokenToSwapTo] = useState<TokenConfig | undefined>();
+  const [tokenToSwapTo, setTokenToSwapTo] = useState<
+    TokenConfig | undefined | null
+  >();
   const [amountToSwap, setAmountToSwap] = useState<string | undefined>();
   const [amountToReceive, setAmountToReceive] = useState<string | undefined>();
   const [tokenPopupPayload, setTokenPopupPayload] = useState<{
-    selectedToken?: TokenConfig;
+    selectedToken?: TokenConfig | null;
     disabledTokens: TokenConfig[];
-    onSelect: Dispatch<SetStateAction<undefined | TokenConfig>>;
+    onSelect: Dispatch<SetStateAction<undefined | TokenConfig | null>>;
   }>();
   const isButtonDisabled = !isChainSupported || amountToSwap === undefined;
 
   const userBalance = useRef<number>(0);
   useEffect(() => {
     async function checkBalance() {
-      if (!address || !tokenToSwapFrom || !chainId) {
+      if (
+        !address ||
+        !tokenToSwapFrom ||
+        !chainId ||
+        tokenToSwapFrom.chainId !== chainId
+      ) {
         userBalance.current = 0;
         return;
       }
@@ -74,19 +81,17 @@ export default function Swap({
     [currentChainOrDefaultChain]
   );
 
-  useEffect(() => {
-    if (nativeToken) {
-      setTokenToSwapTo(nativeToken);
-    }
-  }, [nativeToken]);
-
   const swapPrices = useRef<
-    { nativeToErc: number; ercToNative: number } | undefined
+    { nativeToErc: number; ercToNative: number } | undefined | null
   >();
 
   const [isFetchingPrice, setIsFetchingPrice] = useState(false);
   useEffect(() => {
-    if (!tokenToSwapFrom || !tokenToSwapTo) return;
+    if (!tokenToSwapFrom || !tokenToSwapTo) {
+      swapPrices.current = null;
+      return;
+    }
+
     setIsFetchingPrice(true);
     getPriceForSwap(
       tokenToSwapFrom.address,
@@ -96,7 +101,16 @@ export default function Swap({
       swapPrices.current = prices;
       setIsFetchingPrice(false);
     });
-  }, [tokenToSwapFrom, tokenToSwapTo]);
+  }, [tokenToSwapFrom, tokenToSwapTo, currentChainOrDefaultChain]);
+
+  useEffect(() => {
+    if (nativeToken) {
+      setTokenToSwapTo(nativeToken);
+    }
+    if (tokenToSwapFrom) {
+      setTokenToSwapFrom(null);
+    }
+  }, [chainId, nativeToken]);
 
   const [shouldShowToken0First, setShouldShowToken0First] =
     useState<boolean>(true);
@@ -234,8 +248,8 @@ export default function Swap({
                 </div>
                 <span>
                   {shouldShowToken0First
-                    ? swapPrices.current.ercToNative
-                    : swapPrices.current.nativeToErc}
+                    ? swapPrices.current.ercToNative.toString()
+                    : swapPrices.current.nativeToErc.toString()}
                 </span>
                 <span>
                   {shouldShowToken0First

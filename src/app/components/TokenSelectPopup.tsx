@@ -9,7 +9,7 @@ import Button from "./Button";
 
 type TokenSelectPopupProps = {
   chainId: Chains;
-  selectedToken?: TokenConfig;
+  selectedToken?: TokenConfig | null;
   disabledTokens: TokenConfig[];
   isOpen: boolean;
   onSelect: (token?: TokenConfig) => void;

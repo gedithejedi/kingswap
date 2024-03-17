@@ -57,7 +57,11 @@ export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
   return publicClientToProvider(publicClient);
 }
 
-export async function getBalance(address: `0x${string}`, token: TokenConfig, chainId: number) {
+export async function getBalance(
+  address: `0x${string}`,
+  token: TokenConfig,
+  chainId: number
+) {
   if (token.isNative) {
     const provider = getStaticProvider(chainId);
     return utils.formatEther(await provider.getBalance(address));
@@ -66,6 +70,7 @@ export async function getBalance(address: `0x${string}`, token: TokenConfig, cha
   return readContract({
     address: token.address,
     abi: parseAbi(["function balanceOf(address) view returns (uint256)"]),
+    chainId: chainId,
     functionName: "balanceOf",
     args: [address],
   });
