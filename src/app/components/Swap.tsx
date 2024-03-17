@@ -171,6 +171,7 @@ export default function Swap({
             </div>
           </div>
           <PriceInput
+            isLoading={isFetchingPrice}
             chain={currentChainOrDefaultChain}
             isNumberInputDisabled={true}
             amount={amountToReceive}
@@ -189,7 +190,9 @@ export default function Swap({
           onClick={() =>
             permitToken(amountToSwap || "0", tokenToSwapFrom?.address || "")
           }
-          disabled={isButtonDisabled || !doesUserHaveEnoughBalance}
+          disabled={
+            isButtonDisabled || !doesUserHaveEnoughBalance || isFetchingPrice
+          }
         >
           {!address
             ? "Please connect wallet"
@@ -201,7 +204,7 @@ export default function Swap({
           <div className="w-full flex justify-between">
             <span className="text-primary text-sm">Price</span>
             {swapPrices.current ? (
-              <div className="w-1/2 flex gap-2 justify-end items-center text-sm">
+              <div className="w-2/3 flex gap-2 justify-end items-center text-sm">
                 <span>1</span>
                 <span>
                   {shouldShowToken0First

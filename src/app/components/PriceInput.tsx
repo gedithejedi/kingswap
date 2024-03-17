@@ -5,6 +5,7 @@ import { Chains } from "@/helpers/network";
 
 import { NumericFormat } from "react-number-format";
 import Button from "../components/Button";
+import { Spinner } from "./Spinner";
 
 type PriceInputProps = {
   chain?: Chains;
@@ -21,6 +22,7 @@ type PriceInputProps = {
   setSelectedToken: Dispatch<SetStateAction<undefined | TokenConfig>>;
   disabled?: boolean;
   label?: string;
+  isLoading?: boolean;
 };
 
 export default function PriceInput({
@@ -33,6 +35,7 @@ export default function PriceInput({
   setSelectedToken,
   disabled,
   label,
+  isLoading,
 }: PriceInputProps) {
   const priceInUSDC = useMemo(() => {
     // TODO: add price calculation
@@ -47,16 +50,19 @@ export default function PriceInput({
       <div className="w-full flex flex-col gap-y-1">
         <label className="flex flex-col gap-y-1">
           {label && <span className="ml-2 text-sm font-semibold">{label}</span>}
-          <NumericFormat
-            thousandSeparator={","}
-            allowNegative={false}
-            className="bg-gray-light w-full focus:outline-none text-xl p-2"
-            placeholder={"0.00"}
-            onChange={(e) => setAmount(e.target?.value)}
-            value={amount}
-            disabled={isNumberInputDisabled || disabled}
-            step={0.01}
-          />
+          <div className="w-full flex gap-2 items-center">
+            {isLoading && <Spinner />}
+            <NumericFormat
+              thousandSeparator={","}
+              allowNegative={false}
+              className="bg-gray-light w-full focus:outline-none text-xl p-2"
+              placeholder={"0.00"}
+              onChange={(e) => setAmount(e.target?.value)}
+              value={amount}
+              disabled={isNumberInputDisabled || disabled}
+              step={0.01}
+            />
+          </div>
         </label>
         {priceInUSDC !== undefined && (
           <p className="text-sm">$ {priceInUSDC}</p>
