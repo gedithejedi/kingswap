@@ -41,6 +41,7 @@ export default function Home() {
     [chainId]
   );
   const isChainSupported = useMemo(() => isSupportedChain(chainId), [chainId]);
+
   const signer = useEthersSigner({ chainId });
 
   const { mutate: postPermit } = usePostPermit();
@@ -114,7 +115,7 @@ export default function Home() {
         </div>
 
         <div className="md:w-[80%] max-w-[600px]">
-          <div className="relative flex flex-col items-center mt-10 gap-9 rounded-xl py-4 px-2 border-2">
+          <div className="relative flex flex-col items-center mt-10 gap-9 rounded-xl p-6 border-2">
             <Image
               src="/star.png"
               alt="star"

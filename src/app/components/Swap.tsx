@@ -10,6 +10,8 @@ import type { TokenConfig } from "@/helpers/types";
 import { Chains } from "@/helpers/network";
 import { getBalance } from "@/lib/wallet";
 import { tokensByChain } from "@/helpers/token";
+import { getPriceForSwap } from "@/helpers/priceOracle";
+import Decimal from "decimal.js";
 
 import Button from "../components/Button";
 import PriceInput from "../components/PriceInput";
@@ -37,6 +39,7 @@ export default function Swap({
   >();
   const [tokenToSwapTo, setTokenToSwapTo] = useState<TokenConfig | undefined>();
   const [amountToSwap, setAmountToSwap] = useState<string | undefined>();
+  const [amountToReceive, setAmountToReceive] = useState<string | undefined>();
   const [tokenPopupPayload, setTokenPopupPayload] = useState<{
     selectedToken?: TokenConfig;
     disabledTokens: TokenConfig[];
@@ -77,8 +80,55 @@ export default function Swap({
     }
   }, [nativeToken]);
 
+  const swapPrices = useRef<
+    { nativeToErc: number; ercToNative: number } | undefined
+  >();
+
+  const [isFetchingPrice, setIsFetchingPrice] = useState(false);
+  useEffect(() => {
+    if (!tokenToSwapFrom || !tokenToSwapTo) return;
+    setIsFetchingPrice(true);
+    getPriceForSwap(
+      tokenToSwapFrom.address,
+      tokenToSwapTo.address,
+      currentChainOrDefaultChain
+    ).then((prices) => {
+      swapPrices.current = prices;
+      setIsFetchingPrice(false);
+    });
+  }, [tokenToSwapFrom, tokenToSwapTo]);
+
+  const [shouldShowToken0First, setShouldShowToken0First] =
+    useState<boolean>(true);
+
+  useEffect(() => {
+    if (
+      !tokenToSwapFrom ||
+      !tokenToSwapTo ||
+      !amountToSwap ||
+      !swapPrices.current
+    ) {
+      setAmountToReceive(undefined);
+      return;
+    }
+
+    const swapAmount = new Decimal(
+      parseFloat(amountToSwap?.replace(/,/g, "") ?? "0")
+    );
+    const ercToNative = new Decimal(swapPrices.current?.ercToNative ?? 0);
+    const amount = swapAmount.times(ercToNative);
+
+    setAmountToReceive(amount.toLocaleString());
+  }, [
+    tokenToSwapFrom,
+    tokenToSwapTo,
+    amountToSwap,
+    swapPrices,
+    isFetchingPrice,
+  ]);
+
   return (
-    <div>
+    <div className="w-full">
       {tokenPopupPayload && (
         <TokenSelectPopup
           {...tokenPopupPayload}
@@ -122,8 +172,8 @@ export default function Swap({
           <PriceInput
             chain={currentChainOrDefaultChain}
             isNumberInputDisabled={true}
-            amount={amountToSwap}
-            setAmount={setAmountToSwap}
+            amount={amountToReceive}
+            setAmount={setAmountToReceive}
             selectedToken={tokenToSwapTo}
             setTokenPopupPayload={setTokenPopupPayload}
             disabledTokens={tokenToSwapFrom ? [tokenToSwapFrom] : []}
@@ -143,9 +193,57 @@ export default function Swap({
           {!address
             ? "Please connect wallet"
             : isButtonDisabled
-              ? "Permit"
-              : `Permit ${amountToSwap} ${tokenToSwapFrom?.symbol ?? "ETH"}`}
+              ? "Swap"
+              : `Swap ${amountToSwap} ${tokenToSwapFrom?.symbol ?? "ETH"}`}
         </Button>
+        {(swapPrices.current || isFetchingPrice) && (
+          <div className="w-full flex justify-between">
+            <span className="text-primary text-sm">Price</span>
+            {swapPrices.current ? (
+              <div className="w-1/2 flex gap-2 justify-end items-center text-sm">
+                <span>1</span>
+                <span>
+                  {shouldShowToken0First
+                    ? tokenToSwapFrom?.symbol
+                    : tokenToSwapTo?.symbol}
+                </span>
+                <div
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setShouldShowToken0First(!shouldShowToken0First);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
+                    />
+                  </svg>
+                </div>
+                <span>
+                  {shouldShowToken0First
+                    ? swapPrices.current.ercToNative
+                    : swapPrices.current.nativeToErc}
+                </span>
+                <span>
+                  {shouldShowToken0First
+                    ? tokenToSwapTo?.symbol
+                    : tokenToSwapFrom?.symbol}
+                </span>
+              </div>
+            ) : (
+              isFetchingPrice && <div>Loading price...</div>
+            )}
+          </div>
+        )}
         {!doesUserHaveEnoughBalance && (
           <p className="text-red-400 text-start w-full">
             It looks like you don&apos;t have enough balance to swap{" "}
