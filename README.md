@@ -2,9 +2,9 @@
 
 ![kingswap start page](/document/start_page.png)
 
-`Kingswap` helps users to make token swap without having the chain `native token`. The project is consist of 2 parts. 
+`Kingswap` helps user swap USDC tokens without the need of having any ETH in their wallet. We utilise ERC permits to achieve this. 
 - [Frontend](https://github.com/gedithejedi/kingswap)
-- [Smart contracts](https://github.com/akerbabber/kingswap-contracts)
+- [Foundry Smart Contracts](https://github.com/akerbabber/kingswap-contracts)
 
 Live project can be checked on [kingswap-alpha.vercel.app](https://kingswap-alpha.vercel.app/)
 
