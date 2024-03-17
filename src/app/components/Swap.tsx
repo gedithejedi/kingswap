@@ -130,7 +130,7 @@ export default function Swap({
     const swapAmount = new Decimal(
       parseFloat(amountToSwap?.replace(/,/g, "") ?? "0")
     );
-    const ercToNative = new Decimal(swapPrices.current?.ercToNative ?? 0);
+    const ercToNative = new Decimal(1 / swapPrices.current?.nativeToErc ?? 0);
     const amount = swapAmount.times(ercToNative);
 
     setAmountToReceive(amount.toLocaleString());
