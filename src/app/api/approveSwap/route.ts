@@ -6,7 +6,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { Chains, chainIdToViem, chainRpcUrls } from "@/helpers/network";
 import { tokensByChain } from "@/helpers/token";
 import { createPoolKey } from "@/helpers/poolkey";
-
+import { encodeAbiParameters } from 'viem'
 export interface Permit {
   owner: string;
   spender: string;
@@ -61,6 +61,13 @@ export async function POST(req: Request) {
 
     let amountToReceive = BigNumber.from(value.hex).mul(BigNumber.from(95)).div(100);
 
+    const encodedAddress = encodeAbiParameters(
+      [
+        { name: 'user', type: 'address' },
+      ],
+      [owner]
+    )
+    console.log("encodedAddress", encodedAddress);
     const { request } = await publicClient.simulateContract({
       account,
       address: spender,
@@ -74,7 +81,8 @@ export async function POST(req: Request) {
           BigNumber.from(value.hex),// amountIn,
           0, // amountOutMinimum, .3%
           0, // sqrtPriceLimitX96,
-          "0x0000000000000000000000000000000000000000"// hookData,
+          encodedAddress,
+          //"0x0000000000000000000000000000000000000000"// hookData,
         ],
         owner,
         BigNumber.from(value.hex),
@@ -84,8 +92,8 @@ export async function POST(req: Request) {
         s
       ],
     })
-
-    const res = await client.writeContract(request)
+    console.log(request);
+    await client.writeContract(request)
 
     return NextResponse.json({ message: 'backend went well' })
   } catch (error: any) {
