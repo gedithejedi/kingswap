@@ -27,9 +27,7 @@ export async function POST(req: Request) {
   const { permit, tokenAddress, chainId } = await req.json();
   const { owner, spender, value, deadline, v, r, s } = permit;
 
-  // const rpcUrl = chainRpcUrls[chainId as Chains];
-  const rpcUrl = "https://rpc2.sepolia.org";
-
+  const rpcUrl = chainRpcUrls[chainId as Chains];
   const viemChain = chainIdToViem[chainId as Chains]
 
   const publicClient = createPublicClient({
@@ -74,8 +72,7 @@ export async function POST(req: Request) {
           false,
           owner,
           BigNumber.from(value.hex),// amountIn,
-          //amountToReceive, // amountOutMinimum, .3%
-          0, // amountOutMinimum,
+          amountToReceive, // amountOutMinimum, .3%
           0, // sqrtPriceLimitX96,
           "0x0000000000000000000000000000000000000000"// hookData,
         ],
@@ -88,7 +85,7 @@ export async function POST(req: Request) {
       ],
     })
 
-    const res = await client.writeContract(request)
+    await client.writeContract(request)
 
     return NextResponse.json({ message: 'backend went well' })
   } catch (error: any) {
