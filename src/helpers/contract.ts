@@ -2,8 +2,8 @@ import { Chains } from "./network";
 
 export const contractsByChain: Record<Chains, Record<string, `0x${string}`>> = {
   [Chains.SEPOLIA]: {
-    kingSwap: "0xd5793c7b114a67cbf0ccb4d81d321ab69b9a3949",
-    poolManager: "0xad42935d193Af6a61bf6758CD81B637F787cf22d",
+    kingSwap: "0x569fef97e7dadfdd3d29513d01da7d0807feb109",
+    poolManager: "0xa78C4E832067D08e028CF25De0368B54bEc05C12",
   },
   [Chains.BASE_SEPOLIA]: {},
   [Chains.ARBITRUM_SEPOLIA]: {},

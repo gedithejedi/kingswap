@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import type { TokenConfig } from "@/helpers/types";
-import type { Chains } from "@/helpers/network";
+import { Chains } from "@/helpers/network";
 import { getBalance } from "@/lib/wallet";
 import { tokensByChain } from "@/helpers/token";
 
@@ -106,7 +106,7 @@ export default function Swap({
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                   className="w-6 h-6"
                 >
@@ -135,7 +135,9 @@ export default function Swap({
           isLoading={isLoading}
           type="primary"
           className="w-full text-lg py-3 font-semibold"
-          onClick={() => permitToken(amountToSwap || "0", tokenToSwapFrom?.address || "")}
+          onClick={() =>
+            permitToken(amountToSwap || "0", tokenToSwapFrom?.address || "")
+          }
           disabled={isButtonDisabled || !doesUserHaveEnoughBalance}
         >
           {!address
