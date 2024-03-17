@@ -16,15 +16,15 @@ export const createPoolKey = (
   }
 
   const poolManager = contractsByChain[chain].poolManager;
+  const hooks = contractsByChain[chain].hooks;
   return {
     currency0,
     currency1,
-    // TODO: add hooks address once we implement it
-    hooks: "0x0000000000000000000000000000000000000000",
+    hooks,
     poolManager,
     fee: "3000",
     parameters:
-      "0x0000000000000000000000000000000000000000000000000000000000010000",
+      "0x00000000000000000000000000000000000000000000000000000000000100c0",
   };
 };
 

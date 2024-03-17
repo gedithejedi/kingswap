@@ -8,9 +8,11 @@ export const contractsByChain: Record<Chains, Record<string, `0x${string}`>> = {
   [Chains.BASE_SEPOLIA]: {
     kingSwap: "0xDfa46254e8543e094Fb3911D261cb824453b3f14",
     poolManager: "0x02A861ce06Da648cd270808F17E71949B6b79cf5",
+    hooks: "0x0bf83d6eff67c49464fffca77f7553e6066c19d6",
   },
   [Chains.ARBITRUM_SEPOLIA]: {
     kingSwap: "0x8B8fC6d345Ef56fbeF941DDA3794FcBF207169d2",
     poolManager: "0x3E81bDA1E894cE5b0e1C1b40CaB7b2f311Cb3131",
+    hooks: "0x7f5EAC4CC93A670F9132040289453967a04CB549",
   },
 };
