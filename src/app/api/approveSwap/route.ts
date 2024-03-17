@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       ],
     })
 
-    await client.writeContract(request)
+    const res = await client.writeContract(request)
 
     return NextResponse.json({ message: 'backend went well' })
   } catch (error: any) {

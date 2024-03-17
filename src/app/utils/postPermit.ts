@@ -13,8 +13,8 @@ export interface PermitData {
   userAddress: string;
   signer: ethers.providers.JsonRpcSigner;
   provider:
-    | ethers.providers.JsonRpcProvider
-    | ethers.providers.FallbackProvider;
+  | ethers.providers.JsonRpcProvider
+  | ethers.providers.FallbackProvider;
   recipient: string;
   amount: BigNumber;
 }
@@ -58,23 +58,12 @@ const postPermit = async (data: PermitData) => {
 
     if (!signer) return console.error("Error getting signer");
 
+    let tx
     try {
       const signature = await signer._signTypedData(domain, types, values);
       const sig = ethers.utils.splitSignature(signature);
-      console.log(
-        {
-          owner: userAddress,
-          spender: recipient,
-          value: amount,
-          deadline: BigNumber.from(deadline),
-          v: sig.v,
-          r: sig.r,
-          s: sig.s,
-        },
-        tokenAddress,
-        chainId.toString()
-      );
-      approveSwapTransaction(
+
+      tx = approveSwapTransaction(
         {
           owner: userAddress,
           spender: recipient,
@@ -91,7 +80,7 @@ const postPermit = async (data: PermitData) => {
       console.log(error);
     }
 
-    return;
+    return tx;
   } catch (error) {
     toast.error("Something went wrong initiating the swap.");
   }
@@ -99,8 +88,9 @@ const postPermit = async (data: PermitData) => {
 
 export const usePostPermit = () => {
   return useMutation({
-    mutationFn: (data: PermitData): Promise<void> => postPermit(data),
-    onSuccess: () => {
+    mutationFn: (data: PermitData): Promise<any> => postPermit(data),
+    onSuccess: (tx) => {
+      console.log(tx);
       toast.success("Transaction submitted!");
     },
   });
