@@ -1,5 +1,6 @@
 import ERC20ABI from "@/lib/erc20Abi.json";
 import { ethers, BigNumber } from "ethers";
+import Alert from "../components/Alert";
 
 import dayjs from "dayjs";
 import { approveSwapTransaction } from "../utils/fetchSwap";
@@ -12,15 +13,25 @@ export interface PermitData {
   tokenAddress: string;
   userAddress: string;
   signer: ethers.providers.JsonRpcSigner;
-  provider: ethers.providers.JsonRpcProvider | ethers.providers.FallbackProvider;
+  provider:
+    | ethers.providers.JsonRpcProvider
+    | ethers.providers.FallbackProvider;
   recipient: string;
   amount: BigNumber;
 }
 
 const postPermit = async (data: PermitData) => {
   try {
-    const { tokenAddress, chainId, userAddress, signer, recipient, amount, provider } = data;
-    const token = new ethers.Contract(tokenAddress, ERC20ABI, provider)
+    const {
+      tokenAddress,
+      chainId,
+      userAddress,
+      signer,
+      recipient,
+      amount,
+      provider,
+    } = data;
+    const token = new ethers.Contract(tokenAddress, ERC20ABI, provider);
 
     if (!token) {
       toast.error("soemthing went wrong fetching the token");
@@ -51,17 +62,19 @@ const postPermit = async (data: PermitData) => {
     try {
       const signature = await signer._signTypedData(domain, types, values);
       const sig = ethers.utils.splitSignature(signature);
-      console.log({
-        owner: userAddress,
-        spender: recipient,
-        value: amount,
-        deadline: BigNumber.from(deadline),
-        v: sig.v,
-        r: sig.r,
-        s: sig.s,
-      },
+      console.log(
+        {
+          owner: userAddress,
+          spender: recipient,
+          value: amount,
+          deadline: BigNumber.from(deadline),
+          v: sig.v,
+          r: sig.r,
+          s: sig.s,
+        },
         tokenAddress,
-        chainId.toString());
+        chainId.toString()
+      );
       approveSwapTransaction(
         {
           owner: userAddress,
@@ -88,5 +101,8 @@ const postPermit = async (data: PermitData) => {
 export const usePostPermit = () => {
   return useMutation({
     mutationFn: (data: PermitData): Promise<void> => postPermit(data),
+    onSuccess: () => {
+      toast.success("Transaction submitted!");
+    },
   });
 };

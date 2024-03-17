@@ -106,9 +106,10 @@ export default function Swap({
       !tokenToSwapFrom ||
       !tokenToSwapTo ||
       !amountToSwap ||
+      amountToSwap === "" ||
       !swapPrices.current
     ) {
-      setAmountToReceive(undefined);
+      setAmountToReceive("");
       return;
     }
 
