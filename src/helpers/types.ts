@@ -4,4 +4,5 @@ export declare interface TokenConfig {
   address: `0x${string}`;
   isNative?: boolean;
   imgUrl?: string;
+  decimals: number;
 }

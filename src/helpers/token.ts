@@ -10,6 +10,7 @@ export const tokensByChain: Record<Chains, TokenConfig[]> = {
         "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
       isNative: true,
       address: "0x0000000000000000000000000000000000000000",
+      decimals: 18,
     },
     {
       title: "USDCoin",
@@ -17,6 +18,7 @@ export const tokensByChain: Record<Chains, TokenConfig[]> = {
       imgUrl:
         "https://assets.coingecko.com/coins/images/6319/standard/usdc.png",
       address: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+      decimals: 6,
     },
   ],
   [Chains.BASE_SEPOLIA]: [
@@ -27,6 +29,7 @@ export const tokensByChain: Record<Chains, TokenConfig[]> = {
         "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
       isNative: true,
       address: "0x0000000000000000000000000000000000000000",
+      decimals: 18,
     },
     {
       title: "USDCoin",
@@ -34,6 +37,7 @@ export const tokensByChain: Record<Chains, TokenConfig[]> = {
       imgUrl:
         "https://assets.coingecko.com/coins/images/6319/standard/usdc.png",
       address: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      decimals: 6,
     },
   ],
   [Chains.ARBITRUM_SEPOLIA]: [
@@ -44,6 +48,7 @@ export const tokensByChain: Record<Chains, TokenConfig[]> = {
         "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
       isNative: true,
       address: "0x0000000000000000000000000000000000000000",
+      decimals: 18,
     },
     {
       title: "USDCoin",
@@ -51,6 +56,7 @@ export const tokensByChain: Record<Chains, TokenConfig[]> = {
       imgUrl:
         "https://assets.coingecko.com/coins/images/6319/standard/usdc.png",
       address: "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
+      decimals: 6,
     },
   ],
 };

@@ -14,7 +14,7 @@ export async function getPriceForSwap(
   const poolManager = new ethers.Contract(
     poolManagerAddress,
     [
-      "function getSlot0(bytes32 id) view override returns (uint160 sqrtPriceX96, int24 tick, uint16 protocolFee, uint24 swapFee)",
+      "function getSlot0(bytes32 id) view returns (uint160 sqrtPriceX96, int24 tick, uint16 protocolFee, uint24 swapFee)",
     ],
     provider
   );
@@ -22,8 +22,9 @@ export async function getPriceForSwap(
   const poolId = createPoolId(token0, token1, chain);
   const { sqrtPriceX96 } = await poolManager.getSlot0(poolId);
 
-  const nativeToErc = (sqrtPriceX96 / 2 ** 96) ** 2;
-  const ercToNative = 1 / nativeToErc;
+  const price = (sqrtPriceX96 / 2 ** 96) ** 2;
+  const nativeToErc = price / (10 ** 6 / 10 ** 18);
+  const ercToNative = price / (10 ** 18 / 10 ** 6);
 
   return {
     nativeToErc,
